@@ -1,0 +1,70 @@
+# @package _global_
+
+# specify here default training configuration
+defaults:
+  - config_sub.yaml  # args that can be overridden by below yamls
+  - datamodule: s2n/ppi_bp/for-gcn2.yaml
+    # s2n, separated, connected
+    # ppi_bp, hpo_metab, hpo_neuro, em_user
+  - model: gcn/s2n/for-ppi_bp.yaml
+    # fa, gat, gcn, gcn2, gin, linkx, sage
+    # s2n, separated, connected
+  - callbacks: checkpoint.yaml # set this to null if you don't want to use callbacks
+    # checkpoint, efficiency
+  - logger: csv.yaml
+    # tensorboard.yaml, csv.yaml, many_loggers.yaml
+  - trainer: default.yaml
+
+  - experiment: s2n_aml.yaml
+  - hparams_search: null  # sgn_optuna
+
+  - hydra: default.yaml
+
+  # enable color logging
+  - override hydra/hydra_logging: colorlog
+  - override hydra/job_logging: colorlog
+
+# path to original working directory
+# hydra hijacks working directory by changing it to the current log directory,
+# so it's useful to have this path as a special variable
+# learn more here: https://hydra.cc/docs/next/tutorials/basic/running_your_app/working_directory
+work_dir: ${hydra:runtime.cwd}
+project_dir: ${work_dir}/..
+# Use model subname as experiment name to avoid missing datamodule.dataset_subname interpolation
+experiment_name: ${model.subname}
+
+# path to folder with data
+dataset_path: /mnt/nas2/GNN-DATA/SUBGRAPH/
+
+# use `python run.py debug=true` for easy debugging!
+# this will run 1 train, val and test loop with only 1 batch
+# equivalent to running `python run.py trainer.fast_dev_run=true`
+# (this is placed here just for easier access from command line)
+debug: False
+debug_test: False
+debug_gpu: False
+
+# pretty print config at the start of the run using Rich library
+print_config: True
+
+# disable python warnings if they annoy you
+ignore_warnings: True
+
+# check performance on test set, using the best model achieved during training
+# lightning chooses best model based on metric specified in checkpoint callback
+test_after_training: True
+
+threshold_search:
+  enabled: True
+  metric: illicit_f1
+  n_trials: 30
+  lower: 0.1
+  upper: 0.95
+
+seed: 10
+
+# Training defaults used across experiments
+train:
+  epochs: 150
+  num_threads: 1
+  use_amp: true

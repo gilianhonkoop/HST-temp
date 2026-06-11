@@ -1,0 +1,242 @@
+======================================================
+  PNA Seed sweep
+======================================================
+  Job ID       : 23590309
+  Config       : configs/aml/LIS-2.yaml
+  Resume       : 0
+  Python       : python3.11
+  Started at   : Mon Jun  8 10:02:25 PM CEST 2026
+======================================================
+
+================================================================================
+  Seed 1/5
+================================================================================
+  Seed         : 42
+  Run name     : PNA_LIS_seed_42
+  Temp config  : /tmp/pna_seed_42_JAmr.yaml
+  Metrics file : outputs/PNA_LIS_seed_42/test_metrics.json
+  Started at   : Mon Jun  8 10:02:25 PM CEST 2026
+--------------------------------------------------------------------------------
+
+2026-06-08 22:02:31,501 - INFO - Using device: cuda
+2026-06-08 22:02:31,504 - INFO - Loading cached PNA dataset from /home/ghonkoop/data/aml/LI-Small/pna_cache/node_features-raw_add_degree_feature-True_use_edge_features-True_edge_feature_normalize-zscore_edge_feature_clip-10.0_add_reverse_edges-False_train_ratio-0.6_val_ratio-0.2_split_mode-class_temporal_illicit_label-0_max_degree_hist-1000.pt
+2026-06-08 22:02:39,648 - INFO - Loaded cached PNA dataset in 8.1s
+2026-06-08 22:02:39,924 - INFO - Trainable parameters: 1038209
+2026-06-08 22:02:40,458 - INFO - Using BCEWithLogitsLoss pos_weight=23.616394
+2026-06-08 22:02:52,619 - INFO - Epoch 5/150 | train_loss=0.7985 val_loss=0.7342 val_illicit_f1=0.3454 val_illicit_pr_auc=0.3550 monitor(val/illicit_pr_auc)=0.3550
+2026-06-08 22:03:02,917 - INFO - Epoch 10/150 | train_loss=1.0264 val_loss=0.5231 val_illicit_f1=0.3541 val_illicit_pr_auc=0.3999 monitor(val/illicit_pr_auc)=0.3999
+2026-06-08 22:03:13,181 - INFO - Epoch 15/150 | train_loss=0.5220 val_loss=0.6442 val_illicit_f1=0.2325 val_illicit_pr_auc=0.3633 monitor(val/illicit_pr_auc)=0.3633
+2026-06-08 22:03:23,416 - INFO - Epoch 20/150 | train_loss=0.4407 val_loss=0.5460 val_illicit_f1=0.3614 val_illicit_pr_auc=0.4123 monitor(val/illicit_pr_auc)=0.4123
+2026-06-08 22:03:33,491 - INFO - Epoch 25/150 | train_loss=0.3855 val_loss=0.5772 val_illicit_f1=0.3570 val_illicit_pr_auc=0.3960 monitor(val/illicit_pr_auc)=0.3960
+2026-06-08 22:03:43,697 - INFO - Epoch 30/150 | train_loss=0.5986 val_loss=0.5136 val_illicit_f1=0.3514 val_illicit_pr_auc=0.4301 monitor(val/illicit_pr_auc)=0.4301
+2026-06-08 22:03:53,874 - INFO - Epoch 35/150 | train_loss=0.4050 val_loss=0.5549 val_illicit_f1=0.3257 val_illicit_pr_auc=0.4327 monitor(val/illicit_pr_auc)=0.4327
+2026-06-08 22:04:03,968 - INFO - Epoch 40/150 | train_loss=0.3869 val_loss=0.7830 val_illicit_f1=0.2667 val_illicit_pr_auc=0.3219 monitor(val/illicit_pr_auc)=0.3219
+2026-06-08 22:04:14,061 - INFO - Epoch 45/150 | train_loss=0.3778 val_loss=0.7056 val_illicit_f1=0.2297 val_illicit_pr_auc=0.3266 monitor(val/illicit_pr_auc)=0.3266
+2026-06-08 22:04:24,302 - INFO - Epoch 50/150 | train_loss=0.3869 val_loss=0.5474 val_illicit_f1=0.3627 val_illicit_pr_auc=0.4413 monitor(val/illicit_pr_auc)=0.4413
+2026-06-08 22:04:34,504 - INFO - Epoch 55/150 | train_loss=0.3738 val_loss=0.6639 val_illicit_f1=0.2471 val_illicit_pr_auc=0.3970 monitor(val/illicit_pr_auc)=0.3970
+2026-06-08 22:04:44,726 - INFO - Epoch 60/150 | train_loss=0.3620 val_loss=0.5674 val_illicit_f1=0.3585 val_illicit_pr_auc=0.4369 monitor(val/illicit_pr_auc)=0.4369
+2026-06-08 22:04:54,963 - INFO - Epoch 65/150 | train_loss=0.3513 val_loss=0.6168 val_illicit_f1=0.2696 val_illicit_pr_auc=0.4176 monitor(val/illicit_pr_auc)=0.4176
+2026-06-08 22:05:05,208 - INFO - Epoch 70/150 | train_loss=0.3421 val_loss=0.6048 val_illicit_f1=0.3229 val_illicit_pr_auc=0.4338 monitor(val/illicit_pr_auc)=0.4338
+2026-06-08 22:05:05,209 - INFO - Early stopping at epoch 70 after 20 stale evals
+2026-06-08 22:05:06,345 - INFO - Best threshold on validation (val/illicit_f1) = 0.8577 (score=0.4277)
+2026-06-08 22:05:06,346 - INFO - Test metrics | Loss: 0.5313, Illicit F1: 0.4228, Illicit PR-AUC: 0.3997, Illicit ROC-AUC: 0.9539, Licit F1: 0.9688
+2026-06-08 22:05:06,346 - INFO - Saved final metrics to outputs/PNA_LIS_seed_42/test_metrics.json
+
+--------------------------------------------------------------------------------
+  Seed 42 completed at Mon Jun  8 10:05:08 PM CEST 2026
+  Metrics file: outputs/PNA_LIS_seed_42/test_metrics.json
+================================================================================
+
+================================================================================
+  Seed 2/5
+================================================================================
+  Seed         : 43
+  Run name     : PNA_LIS_seed_43
+  Temp config  : /tmp/pna_seed_43_n5eU.yaml
+  Metrics file : outputs/PNA_LIS_seed_43/test_metrics.json
+  Started at   : Mon Jun  8 10:05:08 PM CEST 2026
+--------------------------------------------------------------------------------
+
+2026-06-08 22:05:14,470 - INFO - Using device: cuda
+2026-06-08 22:05:14,471 - INFO - Loading cached PNA dataset from /home/ghonkoop/data/aml/LI-Small/pna_cache/node_features-raw_add_degree_feature-True_use_edge_features-True_edge_feature_normalize-zscore_edge_feature_clip-10.0_add_reverse_edges-False_train_ratio-0.6_val_ratio-0.2_split_mode-class_temporal_illicit_label-0_max_degree_hist-1000.pt
+2026-06-08 22:05:22,753 - INFO - Loaded cached PNA dataset in 8.3s
+2026-06-08 22:05:23,039 - INFO - Trainable parameters: 1038209
+2026-06-08 22:05:23,577 - INFO - Using BCEWithLogitsLoss pos_weight=23.616394
+2026-06-08 22:05:36,013 - INFO - Epoch 5/150 | train_loss=0.5701 val_loss=0.5546 val_illicit_f1=0.3442 val_illicit_pr_auc=0.3580 monitor(val/illicit_pr_auc)=0.3580
+2026-06-08 22:05:46,323 - INFO - Epoch 10/150 | train_loss=0.4919 val_loss=0.5588 val_illicit_f1=0.3248 val_illicit_pr_auc=0.3891 monitor(val/illicit_pr_auc)=0.3891
+2026-06-08 22:05:56,550 - INFO - Epoch 15/150 | train_loss=0.5054 val_loss=0.5554 val_illicit_f1=0.3208 val_illicit_pr_auc=0.3890 monitor(val/illicit_pr_auc)=0.3890
+2026-06-08 22:06:06,710 - INFO - Epoch 20/150 | train_loss=0.9704 val_loss=0.6429 val_illicit_f1=0.2343 val_illicit_pr_auc=0.3806 monitor(val/illicit_pr_auc)=0.3806
+2026-06-08 22:06:17,051 - INFO - Epoch 25/150 | train_loss=0.4294 val_loss=0.5500 val_illicit_f1=0.3607 val_illicit_pr_auc=0.4125 monitor(val/illicit_pr_auc)=0.4125
+2026-06-08 22:06:27,417 - INFO - Epoch 30/150 | train_loss=0.3981 val_loss=0.5175 val_illicit_f1=0.3510 val_illicit_pr_auc=0.4200 monitor(val/illicit_pr_auc)=0.4200
+2026-06-08 22:06:37,810 - INFO - Epoch 35/150 | train_loss=0.3997 val_loss=0.5533 val_illicit_f1=0.3296 val_illicit_pr_auc=0.4207 monitor(val/illicit_pr_auc)=0.4207
+2026-06-08 22:06:47,990 - INFO - Epoch 40/150 | train_loss=0.4247 val_loss=0.5827 val_illicit_f1=0.2983 val_illicit_pr_auc=0.4055 monitor(val/illicit_pr_auc)=0.4055
+2026-06-08 22:06:58,054 - INFO - Epoch 45/150 | train_loss=0.3914 val_loss=0.5342 val_illicit_f1=0.3363 val_illicit_pr_auc=0.4186 monitor(val/illicit_pr_auc)=0.4186
+2026-06-08 22:07:08,165 - INFO - Epoch 50/150 | train_loss=0.4143 val_loss=0.5791 val_illicit_f1=0.3643 val_illicit_pr_auc=0.4285 monitor(val/illicit_pr_auc)=0.4285
+2026-06-08 22:07:18,134 - INFO - Epoch 55/150 | train_loss=0.3594 val_loss=0.5248 val_illicit_f1=0.3578 val_illicit_pr_auc=0.4275 monitor(val/illicit_pr_auc)=0.4275
+2026-06-08 22:07:28,311 - INFO - Epoch 60/150 | train_loss=0.3622 val_loss=0.5342 val_illicit_f1=0.3515 val_illicit_pr_auc=0.4324 monitor(val/illicit_pr_auc)=0.4324
+2026-06-08 22:07:38,444 - INFO - Epoch 65/150 | train_loss=0.3659 val_loss=0.5604 val_illicit_f1=0.3615 val_illicit_pr_auc=0.4323 monitor(val/illicit_pr_auc)=0.4323
+2026-06-08 22:07:48,415 - INFO - Epoch 70/150 | train_loss=0.3526 val_loss=0.6857 val_illicit_f1=0.2428 val_illicit_pr_auc=0.3697 monitor(val/illicit_pr_auc)=0.3697
+2026-06-08 22:07:58,427 - INFO - Epoch 75/150 | train_loss=0.3457 val_loss=0.6122 val_illicit_f1=0.3646 val_illicit_pr_auc=0.4222 monitor(val/illicit_pr_auc)=0.4222
+2026-06-08 22:08:08,629 - INFO - Epoch 80/150 | train_loss=0.3426 val_loss=0.5395 val_illicit_f1=0.3545 val_illicit_pr_auc=0.4281 monitor(val/illicit_pr_auc)=0.4281
+2026-06-08 22:08:14,784 - INFO - Early stopping at epoch 83 after 20 stale evals
+2026-06-08 22:08:15,915 - INFO - Best threshold on validation (val/illicit_f1) = 0.8577 (score=0.4319)
+2026-06-08 22:08:15,915 - INFO - Test metrics | Loss: 0.6032, Illicit F1: 0.4418, Illicit PR-AUC: 0.4003, Illicit ROC-AUC: 0.9541, Licit F1: 0.9704
+2026-06-08 22:08:15,915 - INFO - Saved final metrics to outputs/PNA_LIS_seed_43/test_metrics.json
+
+--------------------------------------------------------------------------------
+  Seed 43 completed at Mon Jun  8 10:08:18 PM CEST 2026
+  Metrics file: outputs/PNA_LIS_seed_43/test_metrics.json
+================================================================================
+
+================================================================================
+  Seed 3/5
+================================================================================
+  Seed         : 44
+  Run name     : PNA_LIS_seed_44
+  Temp config  : /tmp/pna_seed_44_q4IH.yaml
+  Metrics file : outputs/PNA_LIS_seed_44/test_metrics.json
+  Started at   : Mon Jun  8 10:08:18 PM CEST 2026
+--------------------------------------------------------------------------------
+
+2026-06-08 22:08:24,110 - INFO - Using device: cuda
+2026-06-08 22:08:24,111 - INFO - Loading cached PNA dataset from /home/ghonkoop/data/aml/LI-Small/pna_cache/node_features-raw_add_degree_feature-True_use_edge_features-True_edge_feature_normalize-zscore_edge_feature_clip-10.0_add_reverse_edges-False_train_ratio-0.6_val_ratio-0.2_split_mode-class_temporal_illicit_label-0_max_degree_hist-1000.pt
+2026-06-08 22:08:32,186 - INFO - Loaded cached PNA dataset in 8.1s
+2026-06-08 22:08:32,437 - INFO - Trainable parameters: 1038209
+2026-06-08 22:08:32,962 - INFO - Using BCEWithLogitsLoss pos_weight=23.616394
+2026-06-08 22:08:45,288 - INFO - Epoch 5/150 | train_loss=1.3482 val_loss=0.5542 val_illicit_f1=0.3326 val_illicit_pr_auc=0.3760 monitor(val/illicit_pr_auc)=0.3760
+2026-06-08 22:08:55,628 - INFO - Epoch 10/150 | train_loss=0.4776 val_loss=0.5568 val_illicit_f1=0.3546 val_illicit_pr_auc=0.3852 monitor(val/illicit_pr_auc)=0.3852
+2026-06-08 22:09:05,989 - INFO - Epoch 15/150 | train_loss=0.8681 val_loss=0.6573 val_illicit_f1=0.2990 val_illicit_pr_auc=0.3608 monitor(val/illicit_pr_auc)=0.3608
+2026-06-08 22:09:16,069 - INFO - Epoch 20/150 | train_loss=0.7335 val_loss=0.6412 val_illicit_f1=0.2606 val_illicit_pr_auc=0.3580 monitor(val/illicit_pr_auc)=0.3580
+2026-06-08 22:09:26,318 - INFO - Epoch 25/150 | train_loss=0.4290 val_loss=0.5683 val_illicit_f1=0.3483 val_illicit_pr_auc=0.3786 monitor(val/illicit_pr_auc)=0.3786
+2026-06-08 22:09:36,670 - INFO - Epoch 30/150 | train_loss=0.4061 val_loss=0.5658 val_illicit_f1=0.3545 val_illicit_pr_auc=0.4081 monitor(val/illicit_pr_auc)=0.4081
+2026-06-08 22:09:46,857 - INFO - Epoch 35/150 | train_loss=0.4184 val_loss=0.5103 val_illicit_f1=0.3511 val_illicit_pr_auc=0.4261 monitor(val/illicit_pr_auc)=0.4261
+2026-06-08 22:09:57,131 - INFO - Epoch 40/150 | train_loss=0.3747 val_loss=0.7460 val_illicit_f1=0.2138 val_illicit_pr_auc=0.3314 monitor(val/illicit_pr_auc)=0.3314
+2026-06-08 22:10:07,290 - INFO - Epoch 45/150 | train_loss=0.4195 val_loss=0.5820 val_illicit_f1=0.3554 val_illicit_pr_auc=0.4266 monitor(val/illicit_pr_auc)=0.4266
+2026-06-08 22:10:17,303 - INFO - Epoch 50/150 | train_loss=0.3816 val_loss=0.6166 val_illicit_f1=0.2714 val_illicit_pr_auc=0.3859 monitor(val/illicit_pr_auc)=0.3859
+2026-06-08 22:10:27,482 - INFO - Epoch 55/150 | train_loss=0.3684 val_loss=0.5421 val_illicit_f1=0.3625 val_illicit_pr_auc=0.4273 monitor(val/illicit_pr_auc)=0.4273
+2026-06-08 22:10:37,631 - INFO - Epoch 60/150 | train_loss=0.3612 val_loss=0.5700 val_illicit_f1=0.3512 val_illicit_pr_auc=0.4219 monitor(val/illicit_pr_auc)=0.4219
+2026-06-08 22:10:43,725 - INFO - Early stopping at epoch 63 after 20 stale evals
+2026-06-08 22:10:44,879 - INFO - Best threshold on validation (val/illicit_f1) = 0.8808 (score=0.4180)
+2026-06-08 22:10:44,879 - INFO - Test metrics | Loss: 0.5681, Illicit F1: 0.4243, Illicit PR-AUC: 0.3955, Illicit ROC-AUC: 0.9531, Licit F1: 0.9757
+2026-06-08 22:10:44,879 - INFO - Saved final metrics to outputs/PNA_LIS_seed_44/test_metrics.json
+
+--------------------------------------------------------------------------------
+  Seed 44 completed at Mon Jun  8 10:10:47 PM CEST 2026
+  Metrics file: outputs/PNA_LIS_seed_44/test_metrics.json
+================================================================================
+
+================================================================================
+  Seed 4/5
+================================================================================
+  Seed         : 45
+  Run name     : PNA_LIS_seed_45
+  Temp config  : /tmp/pna_seed_45_erHj.yaml
+  Metrics file : outputs/PNA_LIS_seed_45/test_metrics.json
+  Started at   : Mon Jun  8 10:10:47 PM CEST 2026
+--------------------------------------------------------------------------------
+
+2026-06-08 22:10:53,357 - INFO - Using device: cuda
+2026-06-08 22:10:53,358 - INFO - Loading cached PNA dataset from /home/ghonkoop/data/aml/LI-Small/pna_cache/node_features-raw_add_degree_feature-True_use_edge_features-True_edge_feature_normalize-zscore_edge_feature_clip-10.0_add_reverse_edges-False_train_ratio-0.6_val_ratio-0.2_split_mode-class_temporal_illicit_label-0_max_degree_hist-1000.pt
+2026-06-08 22:11:01,439 - INFO - Loaded cached PNA dataset in 8.1s
+2026-06-08 22:11:01,731 - INFO - Trainable parameters: 1038209
+2026-06-08 22:11:02,244 - INFO - Using BCEWithLogitsLoss pos_weight=23.616394
+2026-06-08 22:11:14,687 - INFO - Epoch 5/150 | train_loss=0.5488 val_loss=0.5823 val_illicit_f1=0.2835 val_illicit_pr_auc=0.3612 monitor(val/illicit_pr_auc)=0.3612
+2026-06-08 22:11:24,935 - INFO - Epoch 10/150 | train_loss=0.4967 val_loss=0.5433 val_illicit_f1=0.3383 val_illicit_pr_auc=0.3970 monitor(val/illicit_pr_auc)=0.3970
+2026-06-08 22:11:35,017 - INFO - Epoch 15/150 | train_loss=0.4546 val_loss=0.6703 val_illicit_f1=0.2574 val_illicit_pr_auc=0.3503 monitor(val/illicit_pr_auc)=0.3503
+2026-06-08 22:11:44,950 - INFO - Epoch 20/150 | train_loss=1.0157 val_loss=0.5126 val_illicit_f1=0.3535 val_illicit_pr_auc=0.4115 monitor(val/illicit_pr_auc)=0.4115
+2026-06-08 22:11:55,067 - INFO - Epoch 25/150 | train_loss=0.4509 val_loss=0.5497 val_illicit_f1=0.3452 val_illicit_pr_auc=0.4242 monitor(val/illicit_pr_auc)=0.4242
+2026-06-08 22:12:05,186 - INFO - Epoch 30/150 | train_loss=0.4284 val_loss=0.5060 val_illicit_f1=0.3293 val_illicit_pr_auc=0.4227 monitor(val/illicit_pr_auc)=0.4227
+2026-06-08 22:12:15,252 - INFO - Epoch 35/150 | train_loss=0.7776 val_loss=0.5073 val_illicit_f1=0.3633 val_illicit_pr_auc=0.4227 monitor(val/illicit_pr_auc)=0.4227
+2026-06-08 22:12:25,396 - INFO - Epoch 40/150 | train_loss=0.3915 val_loss=0.5227 val_illicit_f1=0.3561 val_illicit_pr_auc=0.4326 monitor(val/illicit_pr_auc)=0.4326
+2026-06-08 22:12:35,455 - INFO - Epoch 45/150 | train_loss=0.3990 val_loss=0.5846 val_illicit_f1=0.2796 val_illicit_pr_auc=0.3860 monitor(val/illicit_pr_auc)=0.3860
+2026-06-08 22:12:45,554 - INFO - Epoch 50/150 | train_loss=0.3729 val_loss=0.5544 val_illicit_f1=0.3492 val_illicit_pr_auc=0.4245 monitor(val/illicit_pr_auc)=0.4245
+2026-06-08 22:12:55,671 - INFO - Epoch 55/150 | train_loss=0.3737 val_loss=0.4997 val_illicit_f1=0.3607 val_illicit_pr_auc=0.4353 monitor(val/illicit_pr_auc)=0.4353
+2026-06-08 22:13:05,774 - INFO - Epoch 60/150 | train_loss=0.3761 val_loss=0.5157 val_illicit_f1=0.3491 val_illicit_pr_auc=0.4358 monitor(val/illicit_pr_auc)=0.4358
+2026-06-08 22:13:15,901 - INFO - Epoch 65/150 | train_loss=0.3564 val_loss=0.5699 val_illicit_f1=0.3686 val_illicit_pr_auc=0.4403 monitor(val/illicit_pr_auc)=0.4403
+2026-06-08 22:13:25,969 - INFO - Epoch 70/150 | train_loss=0.3395 val_loss=0.5796 val_illicit_f1=0.3584 val_illicit_pr_auc=0.4270 monitor(val/illicit_pr_auc)=0.4270
+2026-06-08 22:13:31,941 - INFO - Early stopping at epoch 73 after 20 stale evals
+2026-06-08 22:13:33,095 - INFO - Best threshold on validation (val/illicit_f1) = 0.9038 (score=0.4327)
+2026-06-08 22:13:33,095 - INFO - Test metrics | Loss: 0.4804, Illicit F1: 0.4278, Illicit PR-AUC: 0.4069, Illicit ROC-AUC: 0.9560, Licit F1: 0.9784
+2026-06-08 22:13:33,095 - INFO - Saved final metrics to outputs/PNA_LIS_seed_45/test_metrics.json
+
+--------------------------------------------------------------------------------
+  Seed 45 completed at Mon Jun  8 10:13:35 PM CEST 2026
+  Metrics file: outputs/PNA_LIS_seed_45/test_metrics.json
+================================================================================
+
+================================================================================
+  Seed 5/5
+================================================================================
+  Seed         : 46
+  Run name     : PNA_LIS_seed_46
+  Temp config  : /tmp/pna_seed_46_hX0M.yaml
+  Metrics file : outputs/PNA_LIS_seed_46/test_metrics.json
+  Started at   : Mon Jun  8 10:13:35 PM CEST 2026
+--------------------------------------------------------------------------------
+
+2026-06-08 22:13:41,170 - INFO - Using device: cuda
+2026-06-08 22:13:41,171 - INFO - Loading cached PNA dataset from /home/ghonkoop/data/aml/LI-Small/pna_cache/node_features-raw_add_degree_feature-True_use_edge_features-True_edge_feature_normalize-zscore_edge_feature_clip-10.0_add_reverse_edges-False_train_ratio-0.6_val_ratio-0.2_split_mode-class_temporal_illicit_label-0_max_degree_hist-1000.pt
+2026-06-08 22:13:49,275 - INFO - Loaded cached PNA dataset in 8.1s
+2026-06-08 22:13:49,535 - INFO - Trainable parameters: 1038209
+2026-06-08 22:13:50,054 - INFO - Using BCEWithLogitsLoss pos_weight=23.616394
+2026-06-08 22:14:02,372 - INFO - Epoch 5/150 | train_loss=1.0920 val_loss=0.5538 val_illicit_f1=0.3208 val_illicit_pr_auc=0.3824 monitor(val/illicit_pr_auc)=0.3824
+2026-06-08 22:14:12,664 - INFO - Epoch 10/150 | train_loss=0.8701 val_loss=0.5640 val_illicit_f1=0.3482 val_illicit_pr_auc=0.3994 monitor(val/illicit_pr_auc)=0.3994
+2026-06-08 22:14:22,765 - INFO - Epoch 15/150 | train_loss=0.5431 val_loss=0.6891 val_illicit_f1=0.2886 val_illicit_pr_auc=0.3485 monitor(val/illicit_pr_auc)=0.3485
+2026-06-08 22:14:32,918 - INFO - Epoch 20/150 | train_loss=0.4154 val_loss=0.5194 val_illicit_f1=0.3460 val_illicit_pr_auc=0.4124 monitor(val/illicit_pr_auc)=0.4124
+2026-06-08 22:14:43,254 - INFO - Epoch 25/150 | train_loss=0.4141 val_loss=0.6555 val_illicit_f1=0.2424 val_illicit_pr_auc=0.3755 monitor(val/illicit_pr_auc)=0.3755
+2026-06-08 22:14:53,545 - INFO - Epoch 30/150 | train_loss=0.8124 val_loss=0.5029 val_illicit_f1=0.3410 val_illicit_pr_auc=0.4216 monitor(val/illicit_pr_auc)=0.4216
+2026-06-08 22:15:03,872 - INFO - Epoch 35/150 | train_loss=0.4103 val_loss=0.5700 val_illicit_f1=0.3705 val_illicit_pr_auc=0.4061 monitor(val/illicit_pr_auc)=0.4061
+2026-06-08 22:15:14,227 - INFO - Epoch 40/150 | train_loss=0.3983 val_loss=0.5284 val_illicit_f1=0.3472 val_illicit_pr_auc=0.4177 monitor(val/illicit_pr_auc)=0.4177
+2026-06-08 22:15:24,323 - INFO - Epoch 45/150 | train_loss=0.3791 val_loss=0.5282 val_illicit_f1=0.3613 val_illicit_pr_auc=0.4137 monitor(val/illicit_pr_auc)=0.4137
+2026-06-08 22:15:34,380 - INFO - Epoch 50/150 | train_loss=0.4080 val_loss=0.5554 val_illicit_f1=0.3109 val_illicit_pr_auc=0.4291 monitor(val/illicit_pr_auc)=0.4291
+2026-06-08 22:15:44,535 - INFO - Epoch 55/150 | train_loss=0.3773 val_loss=0.5395 val_illicit_f1=0.3519 val_illicit_pr_auc=0.4348 monitor(val/illicit_pr_auc)=0.4348
+2026-06-08 22:15:54,747 - INFO - Epoch 60/150 | train_loss=0.3557 val_loss=0.5376 val_illicit_f1=0.3605 val_illicit_pr_auc=0.4326 monitor(val/illicit_pr_auc)=0.4326
+2026-06-08 22:16:04,752 - INFO - Epoch 65/150 | train_loss=0.3624 val_loss=0.5662 val_illicit_f1=0.3544 val_illicit_pr_auc=0.4380 monitor(val/illicit_pr_auc)=0.4380
+2026-06-08 22:16:14,751 - INFO - Epoch 70/150 | train_loss=0.3466 val_loss=0.5750 val_illicit_f1=0.3559 val_illicit_pr_auc=0.4239 monitor(val/illicit_pr_auc)=0.4239
+2026-06-08 22:16:24,901 - INFO - Epoch 75/150 | train_loss=0.3442 val_loss=0.5731 val_illicit_f1=0.3582 val_illicit_pr_auc=0.4381 monitor(val/illicit_pr_auc)=0.4381
+2026-06-08 22:16:32,828 - INFO - Early stopping at epoch 79 after 20 stale evals
+2026-06-08 22:16:33,963 - INFO - Best threshold on validation (val/illicit_f1) = 0.8808 (score=0.4289)
+2026-06-08 22:16:33,963 - INFO - Test metrics | Loss: 0.6280, Illicit F1: 0.4237, Illicit PR-AUC: 0.3937, Illicit ROC-AUC: 0.9536, Licit F1: 0.9729
+2026-06-08 22:16:33,964 - INFO - Saved final metrics to outputs/PNA_LIS_seed_46/test_metrics.json
+
+--------------------------------------------------------------------------------
+  Seed 46 completed at Mon Jun  8 10:16:36 PM CEST 2026
+  Metrics file: outputs/PNA_LIS_seed_46/test_metrics.json
+================================================================================
+
+================================================================================
+  PNA Seed Sweep Test Summary
+================================================================================
+
+Per-seed test metrics
+------------------------------------------------------------------------------------------------------------------------
+  seed  status      run_name                            loss     il_prec      il_rec       il_f1   il_pr_auc   il_roc_auc      lic_f1
+------------------------------------------------------------------------------------------------------------------------
+    42  ok          PNA_LIS_seed_42                 0.531271    0.349785    0.534426    0.422827    0.399690     0.953912    0.968765
+    43  ok          PNA_LIS_seed_43                 0.603156    0.370288    0.547541    0.441799    0.400280     0.954132    0.970411
+    44  ok          PNA_LIS_seed_44                 0.568056    0.425743    0.422951    0.424342    0.395487     0.953064    0.975711
+    45  ok          PNA_LIS_seed_45                 0.480413    0.483471    0.383607    0.427788    0.406925     0.955982    0.978371
+    46  ok          PNA_LIS_seed_46                 0.627958    0.386486    0.468852    0.423704    0.393705     0.953635    0.972879
+------------------------------------------------------------------------------------------------------------------------
+
+Mean +/- std over completed seeds
+------------------------------------------------------------------------
+metric                                      mean           std     n
+------------------------------------------------------------------------
+test/illicit_f1                         0.428092      0.007890     5
+test/illicit_pr_auc                     0.399218      0.005125     5
+test/illicit_precision                  0.403155      0.052838     5
+test/illicit_recall                     0.471475      0.070412     5
+test/illicit_roc_auc                    0.954145      0.001102     5
+test/licit_f1                           0.973227      0.003892     5
+test/licit_pr_auc                       0.998003      0.000053     5
+test/licit_precision                    0.977460      0.002704     5
+test/licit_recall                       0.969100      0.010328     5
+test/licit_roc_auc                      0.954145      0.001102     5
+test/loss                               0.562171      0.058484     5
+------------------------------------------------------------------------
+
+
+======================================================
+  Finished at  : Mon Jun  8 10:16:36 PM CEST 2026
+======================================================

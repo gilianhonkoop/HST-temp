@@ -1,0 +1,190 @@
+_wandb:
+    value:
+        cli_version: 0.26.1
+        e:
+            q5alixbe7zuz7tp5p4jt9n9jj7jkpsrm:
+                args:
+                    - --config
+                    - /tmp/pna_seed_46_I5GA.yaml
+                codePath: train.py
+                codePathLocal: train.py
+                cpu_count: 64
+                cpu_count_logical: 64
+                cudaVersion: "13.2"
+                disk:
+                    /:
+                        total: "405460795392"
+                        used: "5618069504"
+                email: honkoopgilian@gmail.com
+                executable: /home/ghonkoop/.conda/envs/HST/bin/python3.11
+                gpu: NVIDIA H100
+                gpu_count: 1
+                gpu_nvidia:
+                    - architecture: Hopper
+                      cudaCores: 16896
+                      memoryTotal: "100485038080"
+                      name: NVIDIA H100
+                      uuid: GPU-14780a82-1355-1ea2-37b7-18562f1005d2
+                host: gcn110.local.snellius.surf.nl
+                memory:
+                    total: "811317739520"
+                os: Linux-5.14.0-570.116.1.el9_6.x86_64-x86_64-with-glibc2.34
+                program: /gpfs/home6/ghonkoop/repos/PNA/train.py
+                python: CPython 3.11.15
+                root: /gpfs/home6/ghonkoop/repos/PNA
+                slurm:
+                    cluster_name: snellius
+                    conf: /var/spool/slurm/slurmd/conf-cache/slurm.conf
+                    cpus_on_node: "16"
+                    cpus_per_task: "12"
+                    eclibr: "0"
+                    ecplug: "1"
+                    erlast: sbatch
+                    ersbac: "1"
+                    export_env: ALL
+                    gpus: "1"
+                    gpus_on_node: "1"
+                    gtids: "0"
+                    job_account: gisr119889
+                    job_cpus_per_node: "16"
+                    job_end_time: "1780977796"
+                    job_gid: "76528"
+                    job_gpus: "2"
+                    job_id: "23590313"
+                    job_name: pna_seed
+                    job_nodelist: gcn110
+                    job_num_nodes: "1"
+                    job_partition: gpu_h100
+                    job_qos: normal
+                    job_start_time: "1780948996"
+                    job_uid: "77068"
+                    job_user: ghonkoop
+                    jobid: "23590313"
+                    localid: "0"
+                    mem_per_node: "61440"
+                    nnodes: "1"
+                    nodeid: "0"
+                    nodelist: gcn110
+                    nprocs: "1"
+                    ntasks: "1"
+                    oom_kill_step: "0"
+                    prio_process: "0"
+                    procid: "0"
+                    script_context: prolog_task
+                    step_gres: gres/cpu:0
+                    submit_dir: /gpfs/home6/ghonkoop/repos/PNA
+                    submit_host: int4.local.snellius.surf.nl
+                    task_pid: "4193520"
+                    tasks_per_node: "1"
+                    topology_addr: root.ibsw40.gcn110
+                    topology_addr_pattern: switch.switch.node
+                    tres_per_task: cpu=12
+                startedAt: "2026-06-08T21:13:13.849920Z"
+                writerId: q5alixbe7zuz7tp5p4jt9n9jj7jkpsrm
+        m: []
+        python_version: 3.11.15
+        t:
+            "1":
+                - 1
+                - 5
+                - 51
+                - 53
+                - 77
+            "2":
+                - 1
+                - 5
+                - 51
+                - 53
+                - 77
+            "3":
+                - 2
+                - 13
+                - 16
+            "4": 3.11.15
+            "5": 0.26.1
+            "8":
+                - 2
+            "12": 0.26.1
+            "13": linux-x86_64
+dataset:
+    value:
+        add_degree_feature: true
+        add_reverse_edges: false
+        data_path: /home/ghonkoop/data
+        dataset_name: LI-Medium
+        dataset_type: aml
+        edge_feature_clip: 10
+        edge_feature_norm_eps: 1e-06
+        edge_feature_normalize: zscore
+        illicit_label: 0
+        max_degree_hist: 1000
+        node_features: raw
+        split_mode: class_temporal
+        train_ratio: 0.6
+        use_cache: true
+        use_edge_features: true
+        val_ratio: 0.2
+logging:
+    value:
+        log_interval: 5
+        monitor_metric: val/illicit_pr_auc
+        monitor_mode: max
+        run_name: PNA_LIM-2_seed_46
+        save_dir: outputs
+        use_wandb: true
+        wandb_entity: hierarchical-subgraph-transformer
+        wandb_project: PNA
+model:
+    value:
+        aggregators:
+            - mean
+            - min
+            - max
+            - std
+        dropout: 0.35
+        hidden_dim: 128
+        num_layers: 3
+        post_layers: 1
+        pre_layers: 1
+        readout: mean_sum_max
+        scalers:
+            - identity
+            - amplification
+            - attenuation
+        towers: 2
+optim:
+    value:
+        base_lr: 0.0005382726333060602
+        clip_grad_norm: true
+        lr_scheduler:
+            enabled: true
+            factor: 0.7
+            min_lr: 1e-06
+            mode: max
+            patience: 6
+            type: plateau
+        max_epoch: 150
+        max_grad_norm: 5
+        min_epoch: 50
+        optimizer: adamw
+        patience: 20
+        weight_decay: 0.00028758768289232825
+threshold_search:
+    value:
+        enabled: true
+        lower: 0.05
+        metric: illicit_f1
+        n_trials: 40
+        upper: 0.95
+train:
+    value:
+        batch_size: 256
+        device: cuda
+        eval_batch_size: 512
+        eval_period: 1
+        num_workers: 4
+        persistent_workers: true
+        pin_memory: true
+        pos_weight: null
+        seed: 46
+        training_threshold: 0.5

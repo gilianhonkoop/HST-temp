@@ -1,0 +1,73 @@
+dataset:
+  data_path: "/home/ghonkoop/data"
+  dataset_name: "LI-Small"
+  dataset_type: "aml"
+  embedding_type: None
+  train_ratio: 0.6
+  val_ratio: 0.2
+  illicit_label: 0
+
+aggregators:
+  hidden_dim: 256
+  node_pooling_mode: "fraudgt"
+  edge_pooling_mode: "attention-stats"
+  fraudgt:
+    heads: 4
+
+model:
+  hidden_dim: 256
+  dropout: 0.4091332551533169
+  pearl:
+    num_phi_layers: 4
+    num_samples: 32
+    sample_pool: "mean"
+    random_std: 1.0
+  fraudgt:
+    heads: 4
+
+train:
+  device: "cuda"
+  num_workers: 11
+  num_threads: 1
+  persistent_workers: True
+  pin_memory: True
+  disjoint: True
+  seed: 42
+  use_amp: True
+  mini_batch: True
+  batch_size: 512
+  neighbor_sizes: [50, 50]
+  training_threshold: 0.5
+  summarize_once_per_epoch: False
+  iter_per_epoch: 128
+  eval_period: 1
+  pos_weight: 0.2764389847112034
+
+threshold_search:
+  enabled: True
+  metric: val/illicit_f1
+  n_trials: 50
+  lower: 0.10
+  upper: 0.9
+
+optim:
+  optimizer: adamW
+  weight_decay: 0.00013771391925134624
+  base_lr: 0.0005560371760904601
+  aggregator_lr: 1.3007087312050054e-06
+  max_epoch: 150
+  min_epoch: 60
+  patience: 30
+  clip_grad_norm: True
+  max_grad_norm: 1.0
+
+logging:
+  log_interval: 5
+  use_wandb: True
+  wandb_project: "HST"
+  use_checkpoints: True
+  ckpt_period: 20
+  save_dir: "/scratch-shared/ghonkoop/checkpoints/aml/li-small"
+  run_name: "LIS-5"
+  monitor_metric: "val/illicit_pr_auc"
+  monitor_mode: "max"

@@ -1,0 +1,82 @@
+dataset:
+  data_path: "/home/ghonkoop/data"
+  dataset_name: "LI-Small"
+  dataset_type: "aml"
+  embedding_type: None
+  train_ratio: 0.6
+  val_ratio: 0.2
+  illicit_label: 0
+
+aggregators:
+  hidden_dim: 256
+  node_pooling_mode: "stats"
+  edge_pooling_mode: "stats"
+  fraudgt:
+    heads: 4
+
+model:
+  hidden_dim: 256
+  dropout: 0.49186489500751446
+  pearl:
+    num_phi_layers: 4
+    num_samples: 32
+    sample_pool: "mean"
+    random_std: 1.0
+  fraudgt:
+    heads: 4
+
+train:
+  device: "cuda"
+  num_workers: 11
+  num_threads: 1
+  persistent_workers: True
+  pin_memory: True
+  disjoint: True
+  seed: 42
+  use_amp: True
+  mini_batch: True
+  batch_size: 512
+  neighbor_sizes: [50, 50]
+  training_threshold: 0.5
+  summarize_once_per_epoch: False
+  iter_per_epoch: 128
+  eval_period: 1
+  pos_weight: 0.15075758702204228
+  ema:
+    enabled: False
+    decay: 0.995
+    start_epoch: 5
+    update_every: 1
+  balanced_sampling:
+    enabled: true
+    illicit_fraction: 0.10
+    epoch_size: auto
+
+threshold_search:
+  enabled: True
+  metric: val/illicit_f1
+  n_trials: 50
+  lower: 0.05
+  upper: 0.95
+
+optim:
+  optimizer: adamW
+  weight_decay: 4.7593294775314384e-05
+  base_lr: 0.0005928035365911771
+  aggregator_lr: 2.3768157037674463e-05
+  max_epoch: 200
+  min_epoch: 60
+  patience: 30
+  clip_grad_norm: True
+  max_grad_norm: 1.0
+
+logging:
+  log_interval: 5
+  use_wandb: True
+  wandb_project: "HST"
+  use_checkpoints: True
+  ckpt_period: 20
+  save_dir: "/scratch-shared/ghonkoop/checkpoints/aml/li-small"
+  run_name: "STATS_LIS-1"
+  monitor_metric: "val/illicit_pr_auc"
+  monitor_mode: "max"

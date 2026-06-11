@@ -1,0 +1,16 @@
+_target_: pytorch_lightning.Trainer
+
+# Modern device config (can be overridden via CLI)
+accelerator: gpu
+devices: 1
+
+min_epochs: 25
+# Use train.epochs to determine max epochs; datamodule may not define _max_epochs
+max_epochs: ${train.epochs}
+gradient_clip_val: ${model._gradient_clip_val}
+# check_val_every_n_epoch: 5
+enable_progress_bar: True
+num_sanity_val_steps: 0
+
+benchmark: False
+deterministic: False  # scatter_add_cuda_kernel does not have a deterministic implementation

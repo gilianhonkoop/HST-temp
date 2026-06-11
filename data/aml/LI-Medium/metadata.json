@@ -1,0 +1,94 @@
+{
+  "source_input_dir": "/scratch-shared/ghonkoop/data/aml",
+  "dataset_name": "LI-Medium",
+  "resolved_output_dir": "/home/ghonkoop/data/aml/LI-Medium",
+  "num_transaction_files": 1,
+  "num_illicit_nodes_before_component_filter": 23510,
+  "num_nodes_kept": 416532,
+  "num_edges_kept": 5116331,
+  "num_component_edges": 3418851,
+  "num_subgraphs": 141411,
+  "num_illicit_subgraphs": 7157,
+  "num_licit_subgraphs": 134254,
+  "illicit_subgraph_sizes": {
+    "min": 2,
+    "max": 3500,
+    "avg": 3.151040938940897,
+    "median": 2.0
+  },
+  "licit_subgraph_sizes": {
+    "min": 2,
+    "max": 3500,
+    "avg": 2.9345866789816317,
+    "median": 2.0
+  },
+  "include_singletons": false,
+  "normalize_features": true,
+  "add_licit_subgraphs": true,
+  "licit_ratio": 25.0,
+  "licit_seed": 42,
+  "licit_bfs_prob": 0.5,
+  "max_component_size": 3500,
+  "normalization_type": "zscore (continuous only)",
+  "anchor_timestamp_epoch": 1661983190.0,
+  "currency_to_id": {
+    "Australian Dollar": 0,
+    "Bitcoin": 1,
+    "Brazil Real": 2,
+    "Canadian Dollar": 3,
+    "Euro": 4,
+    "Mexican Peso": 5,
+    "Ruble": 6,
+    "Rupee": 7,
+    "Saudi Riyal": 8,
+    "Shekel": 9,
+    "Swiss Franc": 10,
+    "UK Pound": 11,
+    "US Dollar": 12,
+    "Yen": 13,
+    "Yuan": 14
+  },
+  "payment_format_to_id": {
+    "ACH": 0,
+    "Bitcoin": 1,
+    "Cash": 2,
+    "Cheque": 3,
+    "Credit Card": 4,
+    "Reinvestment": 5,
+    "Wire": 6
+  },
+  "edge_feature_description": {
+    "feat0": "relative timestamp seconds (zscore if enabled)",
+    "feat1": "amount_received (zscore if enabled)",
+    "feat2": "receiving_currency_id",
+    "feat3": "payment_format_id",
+    "feat4": "amount_paid (zscore if enabled)",
+    "feat5": "payment_currency_id"
+  },
+  "node_feature_description": {
+    "clId": "bank::account identifier",
+    "feat0": "outgoing_tx_count (zscore if enabled)",
+    "feat1": "incoming_tx_count (zscore if enabled)",
+    "feat2": "outgoing_amount_paid_sum (zscore if enabled)",
+    "feat3": "incoming_amount_received_sum (zscore if enabled)"
+  },
+  "subgraph_feature_description": {
+    "feat0": "num_nodes",
+    "feat1": "num_internal_edges",
+    "ccStartTime": "earliest transaction timestamp among nodes in component",
+    "ccEndTime": "latest transaction timestamp among nodes in component"
+  },
+  "component_edges_file": {
+    "path": "component_edges.csv",
+    "description": "Precomputed internal edges per connected component for faster loading."
+  },
+  "notes": [
+    "Node illicit/licit flag is not included as a node feature.",
+    "Is Laundering is not included as an edge feature.",
+    "Subgraphs are connected components of illicit-only graph.",
+    "Components larger than max_component_size are split into connected BFS chunks when max_component_size > 0.",
+    "Licit subgraphs are sampled as connected sets from licit-only graph using hybrid BFS/DFS.",
+    "Transaction-level edges are kept to preserve temporal information.",
+    "Node IDs include bank and account (bank::account), similar to FraudGT behavior."
+  ]
+}

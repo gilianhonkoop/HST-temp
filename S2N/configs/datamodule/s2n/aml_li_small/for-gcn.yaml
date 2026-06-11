@@ -1,0 +1,19 @@
+_target_: data.SubgraphDataModule
+defaults:
+  - common_datamodule.yaml
+dataset_name: AMLHI
+dataset_path: /home/ghonkoop/data/aml/LI-Small
+dataset_subname: AML-LI-Small
+embedding_type: no_embedding
+use_s2n: True
+s2n_use_sub_edge_index: False
+s2n_mapping_matrix_type: unnormalized
+s2n_target_matrix: adjacent_with_self_loops
+subgraph_batching: null
+batch_size: 128
+use_sparse_tensor: False
+
+# Internal flags expected by some model configs
+_is_multi_labels: false
+_max_epochs: 100
+custom_splits: null

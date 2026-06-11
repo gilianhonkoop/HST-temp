@@ -1,0 +1,26 @@
+name: GLASS
+channels:
+  - pytorch
+  - pyg
+  - conda-forge
+dependencies:
+  - python=3.9.*=*cpython*
+  - numpy=1.26.4
+  - pandas
+  - scikit-learn
+  - pyyaml
+  - networkx
+  - tqdm
+  - pytorch=1.9.0
+  - torchvision
+  - torchaudio
+  - cudatoolkit=11.1
+  - pip=23.2.1
+  - pip:
+      - wandb
+      - python-dotenv
+      - https://data.pyg.org/whl/torch-1.9.0%2Bcu111/torch_scatter-2.0.9-cp39-cp39-linux_x86_64.whl
+      - https://data.pyg.org/whl/torch-1.9.0%2Bcu111/torch_sparse-0.6.12-cp39-cp39-linux_x86_64.whl
+      - https://data.pyg.org/whl/torch-1.9.0%2Bcu111/torch_cluster-1.5.9-cp39-cp39-linux_x86_64.whl
+      - https://data.pyg.org/whl/torch-1.9.0%2Bcu111/torch_spline_conv-1.2.1-cp39-cp39-linux_x86_64.whl
+      - torch-geometric==1.7.2

@@ -1,0 +1,73 @@
+dataset:
+  data_path: "/home/ghonkoop/data"
+  dataset_name: "HI-Small"
+  dataset_type: "aml"
+  embedding_type: None
+  train_ratio: 0.6
+  val_ratio: 0.2
+  illicit_label: 0
+
+aggregators:
+  hidden_dim: 256
+  node_pooling_mode: "fraudgt"
+  edge_pooling_mode: "attention-stats"
+  fraudgt:
+    heads: 4
+
+model:
+  hidden_dim: 256
+  dropout: 0.35
+  pearl:
+    num_phi_layers: 4
+    num_samples: 32
+    sample_pool: "mean"
+    random_std: 1.0
+  fraudgt:
+    heads: 4
+
+train:
+  device: "cuda"
+  num_workers: 11
+  num_threads: 1
+  persistent_workers: True
+  pin_memory: True
+  disjoint: True
+  seed: 42
+  use_amp: True
+  mini_batch: True
+  batch_size: 512
+  neighbor_sizes: [50, 50]
+  training_threshold: 0.75
+  summarize_once_per_epoch: False
+  iter_per_epoch: 64
+  eval_period: 1
+  pos_weight: 0.04
+
+threshold_search:
+  enabled: True
+  metric: val/illicit_f1
+  n_trials: 50
+  lower: 0.15
+  upper: 0.85
+
+optim:
+  optimizer: adamW
+  weight_decay: 7.5e-5
+  base_lr: 9.3e-4
+  aggregator_lr: 8.0e-5
+  max_epoch: 100
+  min_epoch: 40
+  patience: 25
+  clip_grad_norm: True
+  max_grad_norm: 1.0
+
+logging:
+  log_interval: 5
+  use_wandb: True
+  wandb_project: "HST"
+  use_checkpoints: True
+  ckpt_period: 20
+  save_dir: "/scratch-shared/ghonkoop/checkpoints/aml/hi-small"
+  run_name: "HIS-1"
+  monitor_metric: "val/illicit_pr_auc"
+  monitor_mode: "max"

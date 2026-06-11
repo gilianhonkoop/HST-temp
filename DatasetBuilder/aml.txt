@@ -1,0 +1,26 @@
+IBM AML DATASET SCHEMA DEFINITIONS
+
+FILE: *_Transactions.csv
+Description: Contains the ledger of all financial movements.
+---------------------------------------------------------------------------
+1. Timestamp:          Date and time of the transaction (YYYY/MM/DD HH:MM).
+2. From Bank:          Numeric code for bank where transaction originates
+3. Account:            Hexadecimal code for account where transaction originates
+4. To Bank:            Numeric code for bank where transaction ends
+5. Account:            Hexadecimal code for account where transaction ends
+6. Amount Received:    Monetary amount received in From account (in currency units of the next column)
+7. Receiving Currency: Currency such as dollars, euros, etc of From account
+8. Amount Paid:        Monetary amount paid (in currency units of the next column)
+9. Payment Currency:   Currency such as dollars, euros, etc of From account
+10. Payment Format:    How transaction was conducted, e.g. cheque, ACH, wire, credit cards, etc.
+11. Is Laundering:     0/1 value with 1 = Transaction is Laundering, 0 = Not
+
+
+FILE: *_Accounts.csv
+Description: Metadata for the accounts involved in the transactions.
+---------------------------------------------------------------------------
+1. Bank Name
+2. Bank ID
+3. Account Number
+4. Entity ID
+5. Entitiy Name

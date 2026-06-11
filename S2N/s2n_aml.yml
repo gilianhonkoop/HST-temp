@@ -1,0 +1,45 @@
+name: s2n_env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - numpy
+  - scikit-learn
+  - networkx
+  - scipy
+  - wandb
+  - python-dotenv
+  - tqdm
+  - matplotlib
+  - pandas
+  - pip:
+    - --extra-index-url https://download.pytorch.org/whl/cu124
+    - torch==2.5.1+cu124
+    - torchvision==0.20.1+cu124
+    - torchaudio==2.5.1+cu124
+    - --find-links https://data.pyg.org/whl/torch-2.5.1+cu124.html
+    - torch-geometric==2.6.1
+    - torch-scatter
+    - torch-sparse
+    - torch-cluster
+    - pyg-lib
+    - pytorch-lightning
+    - hydra-core
+    - hydra-colorlog
+    - hydra-optuna-sweeper
+    - optuna
+    - torchmetrics
+    - tensorboard
+    - numpy-indexed
+    - p-tqdm
+    - yacs
+    - pathos
+    - parmap
+    - setuptools
+    - einops 
+    - termcolor 
+    - sortedcontainers 
+    - pygsp
+    - sympy

@@ -1,0 +1,20 @@
+2026-06-08 22:24:23,527 - INFO - Epoch 5/150 | train_loss=0.8070 val_loss=0.5417 val_illicit_f1=0.3563 val_illicit_pr_auc=0.4181 monitor(val/illicit_pr_auc)=0.4181
+2026-06-08 22:25:01,851 - INFO - Epoch 10/150 | train_loss=0.4927 val_loss=0.5115 val_illicit_f1=0.3630 val_illicit_pr_auc=0.4422 monitor(val/illicit_pr_auc)=0.4422
+2026-06-08 22:25:39,278 - INFO - Epoch 15/150 | train_loss=0.4477 val_loss=0.5354 val_illicit_f1=0.3416 val_illicit_pr_auc=0.4337 monitor(val/illicit_pr_auc)=0.4337
+2026-06-08 22:26:17,142 - INFO - Epoch 20/150 | train_loss=0.4293 val_loss=0.5198 val_illicit_f1=0.3650 val_illicit_pr_auc=0.4584 monitor(val/illicit_pr_auc)=0.4584
+2026-06-08 22:26:55,604 - INFO - Epoch 25/150 | train_loss=0.4554 val_loss=0.5160 val_illicit_f1=0.3619 val_illicit_pr_auc=0.4663 monitor(val/illicit_pr_auc)=0.4663
+2026-06-08 22:27:33,801 - INFO - Epoch 30/150 | train_loss=0.4136 val_loss=0.5133 val_illicit_f1=0.3661 val_illicit_pr_auc=0.4656 monitor(val/illicit_pr_auc)=0.4656
+2026-06-08 22:28:11,609 - INFO - Epoch 35/150 | train_loss=0.4071 val_loss=0.4778 val_illicit_f1=0.3691 val_illicit_pr_auc=0.4700 monitor(val/illicit_pr_auc)=0.4700
+2026-06-08 22:28:49,664 - INFO - Epoch 40/150 | train_loss=0.4026 val_loss=0.4814 val_illicit_f1=0.3690 val_illicit_pr_auc=0.4666 monitor(val/illicit_pr_auc)=0.4666
+2026-06-08 22:29:27,424 - INFO - Epoch 45/150 | train_loss=0.4010 val_loss=0.5044 val_illicit_f1=0.3709 val_illicit_pr_auc=0.4710 monitor(val/illicit_pr_auc)=0.4710
+2026-06-08 22:30:05,515 - INFO - Epoch 50/150 | train_loss=0.3970 val_loss=0.5050 val_illicit_f1=0.3670 val_illicit_pr_auc=0.4720 monitor(val/illicit_pr_auc)=0.4720
+2026-06-08 22:30:43,625 - INFO - Epoch 55/150 | train_loss=0.3896 val_loss=0.5021 val_illicit_f1=0.3599 val_illicit_pr_auc=0.4702 monitor(val/illicit_pr_auc)=0.4702
+2026-06-08 22:31:21,652 - INFO - Epoch 60/150 | train_loss=0.3848 val_loss=0.4849 val_illicit_f1=0.3696 val_illicit_pr_auc=0.4727 monitor(val/illicit_pr_auc)=0.4727
+2026-06-08 22:31:59,500 - INFO - Epoch 65/150 | train_loss=0.3850 val_loss=0.5137 val_illicit_f1=0.3662 val_illicit_pr_auc=0.4706 monitor(val/illicit_pr_auc)=0.4706
+2026-06-08 22:32:37,175 - INFO - Epoch 70/150 | train_loss=0.3832 val_loss=0.5309 val_illicit_f1=0.3621 val_illicit_pr_auc=0.4691 monitor(val/illicit_pr_auc)=0.4691
+2026-06-08 22:32:44,776 - INFO - Early stopping at epoch 71 after 20 stale evals
+/gpfs/home6/ghonkoop/repos/PNA/train.py:431: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  ckpt = torch.load(checkpoint_path, map_location=device)
+2026-06-08 22:32:48,051 - INFO - Best threshold on validation (val/illicit_f1) = 0.8808 (score=0.4731)
+2026-06-08 22:32:48,052 - INFO - Test metrics | Loss: 0.4907, Illicit F1: 0.4759, Illicit PR-AUC: 0.4967, Illicit ROC-AUC: 0.9508, Licit F1: 0.9729
+2026-06-08 22:32:48,052 - INFO - Saved final metrics to outputs/PNA_LIM-2_seed_43/test_metrics.json

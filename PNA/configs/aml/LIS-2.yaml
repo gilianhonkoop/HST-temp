@@ -1,0 +1,74 @@
+dataset:
+  dataset_type: aml
+  data_path: /home/ghonkoop/data
+  dataset_name: LI-Small
+  use_cache: true
+  train_ratio: 0.6
+  val_ratio: 0.2
+  split_mode: class_temporal
+  illicit_label: 0
+  node_features: raw
+  add_degree_feature: true
+  use_edge_features: true
+  edge_feature_normalize: zscore
+  edge_feature_norm_eps: 1.0e-6
+  edge_feature_clip: 10.0
+  add_reverse_edges: false
+  max_degree_hist: 1000
+
+model:
+  hidden_dim: 128
+  num_layers: 3
+  dropout: 0.35
+  towers: 2
+  pre_layers: 1
+  post_layers: 1
+  aggregators: [mean, min, max, std]
+  scalers: [identity, amplification, attenuation]
+  readout: mean_sum_max
+
+train:
+  seed: 42
+  device: cuda
+  batch_size: 256
+  eval_batch_size: 512
+  num_workers: 4
+  pin_memory: true
+  persistent_workers: true
+  training_threshold: 0.5
+  eval_period: 1
+  pos_weight: null
+
+optim:
+  optimizer: adamw
+  base_lr: 0.0005382726333060602
+  weight_decay: 0.00028758768289232825
+  max_epoch: 150
+  min_epoch: 60
+  patience: 20
+  clip_grad_norm: true
+  max_grad_norm: 5.0
+  lr_scheduler:
+    enabled: true
+    type: plateau
+    mode: max
+    factor: 0.7
+    patience: 6
+    min_lr: 1.0e-6
+
+threshold_search:
+  enabled: true
+  lower: 0.05
+  upper: 0.95
+  n_trials: 40
+  metric: illicit_f1
+
+logging:
+  save_dir: outputs
+  run_name: PNA_LIS
+  use_wandb: true
+  wandb_entity: hierarchical-subgraph-transformer
+  wandb_project: PNA
+  monitor_metric: val/illicit_pr_auc
+  monitor_mode: max
+  log_interval: 5

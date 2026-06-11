@@ -1,0 +1,46 @@
+study:
+  name: pna_aml_search
+  storage: sqlite:///his_pna_optuna.db
+  direction: maximize
+  n_trials: 25
+  n_jobs: 1
+  objective_metric: best_metric
+  preload_data: true
+  param_penalty: 0.0
+
+search_space:
+  # model.hidden_dim:
+  #   type: categorical
+  #   choices: [96, 128, 192, 256]
+  # model.num_layers:
+  #   type: int
+  #   low: 2
+  #   high: 5
+  model.dropout:
+    type: float
+    low: 0.1
+    high: 0.5
+  # model.towers:
+  #   type: categorical
+  #   choices: [1, 2, 4]
+  # train.batch_size:
+  #   type: categorical
+  #   choices: [128, 256, 512]
+  optim.base_lr:
+    type: float
+    low: 0.0001
+    high: 0.003
+    log: true
+  optim.weight_decay:
+    type: float
+    low: 0.00001
+    high: 0.001
+    log: true
+  # optim.patience:
+  #   type: categorical
+  #   choices: [12, 20, 30]
+  train.pos_weight:
+    type: float
+    low: 1
+    high: 25
+    log: true

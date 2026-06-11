@@ -1,0 +1,11 @@
+# @package _global_
+
+# https://pytorch-lightning.readthedocs.io/en/latest/extensions/generated/pytorch_lightning.loggers.WandbLogger.html
+defaults:
+  - override /logger: wandb.yaml
+
+logger:
+  wandb:
+    entity: ""          # Overwrite in command line
+    project: "S2N"      # Overwrite in command line
+    name: "${experiment_name}"

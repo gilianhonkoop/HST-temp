@@ -1,0 +1,21 @@
+_target_: data.SubgraphDataModule
+defaults:
+  - common_datamodule.yaml
+dataset_name: SAMLD
+dataset_path: /home/ghonkoop/data/saml-d
+dataset_subname: SAMLD
+embedding_type: no_embedding
+val_ratio: 0.2
+test_ratio: 0.2
+split_mode: class_temporal
+use_s2n: True
+s2n_use_sub_edge_index: True
+s2n_mapping_matrix_type: unnormalized
+s2n_target_matrix: adjacent_with_self_loops
+subgraph_batching: null
+batch_size: 128
+use_sparse_tensor: False
+
+_is_multi_labels: false
+_max_epochs: 100
+custom_splits: null

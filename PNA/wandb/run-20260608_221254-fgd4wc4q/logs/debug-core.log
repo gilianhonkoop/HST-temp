@@ -1,0 +1,19 @@
+{"time":"2026-06-08T22:12:54.745004734+02:00","level":"INFO","msg":"main: starting server","port-filename":"/scratch-local/ghonkoop.23590307/tmpjd938xlm/port-3851278.txt","pid":3851278,"detached":false,"idle-timeout":600000000000,"log-level":0,"disable-analytics":false,"shutdown-on-parent-exit":false,"enable-dcgm-profiling":false}
+{"time":"2026-06-08T22:12:54.746277409+02:00","level":"INFO","msg":"server: will exit if parent process dies","ppid":3851278}
+{"time":"2026-06-08T22:12:54.746265569+02:00","level":"INFO","msg":"server: accepting connections","addr":{"Name":"/scratch-local/ghonkoop.23590307/wandb-3851278-3851313-3332817858/socket","Net":"unix"}}
+{"time":"2026-06-08T22:12:54.917051709+02:00","level":"INFO","msg":"connection: ManageConnectionData: new connection created","id":"1(@)"}
+{"time":"2026-06-08T22:12:54.926061066+02:00","level":"INFO","msg":"handleInformInit: received","streamId":"fgd4wc4q","id":"1(@)"}
+{"time":"2026-06-08T22:12:55.173643753+02:00","level":"INFO","msg":"handleInformInit: stream started","streamId":"fgd4wc4q","id":"1(@)"}
+{"time":"2026-06-08T22:13:00.547157483+02:00","level":"INFO","msg":"connection: cancelling request","id":"1(@)","requestId":"zke1orzc0rl4"}
+{"time":"2026-06-08T22:17:13.871093742+02:00","level":"INFO","msg":"connection: cancelling request","id":"1(@)","requestId":"zke1orzc0rl4"}
+{"time":"2026-06-08T22:17:14.710268202+02:00","level":"INFO","msg":"connection: cancelling request","id":"1(@)","requestId":"zke1orzc0rl4"}
+{"time":"2026-06-08T22:17:14.71103982+02:00","level":"INFO","msg":"handleInformFinish: finish message received","streamId":"fgd4wc4q","id":"1(@)"}
+{"time":"2026-06-08T22:17:14.712996093+02:00","level":"INFO","msg":"handleInformFinish: stream closed","streamId":"fgd4wc4q","id":"1(@)"}
+{"time":"2026-06-08T22:17:15.034491134+02:00","level":"INFO","msg":"handleInformTeardown: server teardown initiated","id":"1(@)"}
+{"time":"2026-06-08T22:17:15.034579874+02:00","level":"INFO","msg":"handleInformTeardown: server shutdown complete","id":"1(@)"}
+{"time":"2026-06-08T22:17:15.034592404+02:00","level":"INFO","msg":"server is shutting down"}
+{"time":"2026-06-08T22:17:15.034556744+02:00","level":"INFO","msg":"connection: closing","id":"1(@)"}
+{"time":"2026-06-08T22:17:15.034641154+02:00","level":"INFO","msg":"connection: closed successfully","id":"1(@)"}
+{"time":"2026-06-08T22:17:15.034651204+02:00","level":"INFO","msg":"connection: ManageConnectionData: connection closed","id":"1(@)"}
+{"time":"2026-06-08T22:17:15.035111942+02:00","level":"INFO","msg":"server: listener closed","addr":{"Name":"/scratch-local/ghonkoop.23590307/wandb-3851278-3851313-3332817858/socket","Net":"unix"}}
+{"time":"2026-06-08T22:17:15.035154782+02:00","level":"INFO","msg":"server is closed"}

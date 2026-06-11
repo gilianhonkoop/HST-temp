@@ -1,0 +1,1645 @@
+﻿Translating Subgraphs to Nodes Makes Simple GNNs
+Strong and Efficient for Subgraph Representation Learning
+
+Dongkwan Kim 1 Alice Oh 1
+
+Abstract 2022). However, specialized models suffer from large mem-
+Subgraph representation learning has emerged ory and computational requirements from a large global
+as an important problem, but it is by default ap- graph. Their complex operations also lead to limitations
+proached with specialized graph neural networks in learning both local and global interactions of subgraphs.
+on a large global graph. These models demand Here, we address a fundamental yet underexplored question
+extensive memory and computational resources in subgraph representation learning before model design:
+but challenge modeling hierarchical structures of How can we efficiently and effectively process subgraphs
+subgraphs. In this paper, we propose Subgraph- as data for representation learning?
+To-Node (S2N) translation, a novel formulation In this paper, we propose ‘Subgraph-To-Node (S2N)’, a
+for learning representations of subgraphs. Specifi- novel data structure to solve subgraph-level prediction tasks
+cally, given a set of subgraphs in the global graph, efficiently. This data structure is a new graph translated from
+we construct a new graph by coarsely transform- the original global graph and subgraphs, where its nodes
+ing subgraphs into nodes. Demonstrating both are the original subgraphs, and its edges are the relations
+theoretical and empirical evidence, S2N not only among the original subgraphs. Then, we can get the results
+significantly reduces memory and computational of the subgraph-level tasks by performing node-level tasks
+costs compared to state-of-the-art models but also from these node representations.
+outperforms them by capturing both local and
+global structures of the subgraph. By leveraging For example, Alsentzer et al. (2020) introduces a fitness so-
+graph coarsening methods, our method outper- cial network where subgraphs are users, nodes are workouts,
+forms baselines even in a data-scarce setting with and edges indicate if multiple users complete workouts.
+insufficient subgraphs. Our experiments on eight By using S2N translation, a new graph is created; users
+benchmarks demonstrate that fined-tuned mod- become nodes, and edges express relations between them.
+els with S2N translation can process 183 – 711 This graph directly shows the relationships between users,
+times more subgraph samples than state-of-the-art following the conventional approach of describing social
+models at a better or similar performance level. networks where nodes are users. As seen in this example,
+
+S2N can provide a more precise description of real-world
+problems than a form of subgraphs.
+
+1. Introduction The S2N translation enables efficient subgraph representa-
+tion learning. The number of nodes in the S2N graph is
+
+Subgraph representation learning has been shown to be use- decreased to the number of original subgraphs. The edges
+ful for various real-world problems (Bordes et al., 2014; of the S2N graph are also significantly reduced, which we
+Luo, 2022; Hamidi Rad et al., 2022; Maheshwari et al., theoretically prove and empirically confirm in real-world
+2024). Current research uses the default data structures for datasets. We can load large batches of subgraphs on the
+graph-level tasks, treating the subgraph as just a subset of the GPU memory and parallelize the training and inference.
+global graph. Existing studies on subgraph representation Since S2N translation does not interfere with model selec-
+learning focus on developing graph neural networks special- tion, even simple GNNs without complex operations can
+ized for subgraphs (Alsentzer et al., 2020; Wang & Zhang, encode node representations in the S2N graph.
+
+1School of Computing, KAIST, South Korea. Correspondence There can be various implementations of S2N translation,
+to: Dongkwan Kim <dongkwan.kim@kaist.ac.kr>, Alice Oh and here, we create new edges as the number of shared edges
+<alice.oh@kaist.edu>.
+
+across a pair of subgraphs. Then, we normalize and sparsify
+Proceedings of the 41 st International Conference on Machine edges based on weights to approximate the structure of the
+Learning, Vienna, Austria. PMLR 235, 2024. Copyright 2024 by global graph. This process makes a coarse S2N graph carry
+the author(s).
+
+1
+
+
+
+Translating Subgraphs to Nodes Makes Simple GNNs Strong and Efficient for Subgraph Representation Learning
+
+sufficient information across subgraphs for the task. We and communities in mobile game user networks (Zhang
+can additionally preserve structural information during S2N et al., 2023) are represented by subgraphs. However, they
+translation using two strategies. First, we propose S2N that are specialized for each domain (Zhang et al., 2023; Li
+retains internal structures in subgraphs. Second, we incorpo- et al., 2023; Trümper et al., 2023; Ouyang et al., 2024; Ma-
+rate structural encoding into input node features (Dwivedi heshwari et al., 2024) or have strong assumptions about the
+et al., 2022). These enhancements require negligible re- subgraph (Meng et al., 2018; Hamidi Rad et al., 2022; Kim
+sources, as they are performed only once before training et al., 2022; Luo, 2022), making them difficult to general-
+and are efficiently performed with low complexity of com- ize. The Subgraph Neural Network (SubGNN) (Alsentzer
+putation and space. et al., 2020) is the first general approach to subgraph rep-
+Furthermore, we address S2N’s challenge when there are resentation learning using topology, positions, and con-
+not sufficient samples available, specifically, representing nectivity. The GNN with LAbeling trickS for Subgraph
+parts of the global graph not covered by existing subgraphs. (GLASS) (Wang & Zhang, 2022) uses a labeling trick to dis-
+We introduce Coarsened S2N (CoS2N), which uses graph tinguish nodes inside and outside the subgraph and enhance
+coarsening to create ‘virtual’ subgraphs that summarize the the expressive power of representations. However, both Sub-
+global structure. The CoS2N allows message-passing be- GNN and GLASS perform complex operations on a large
+tween distant subgraphs with labels without compromising global graph, demanding high memory and computation
+efficiency. We also theoretically show that CoS2N can re- but not reflecting the layered structures of subgraphs. Our
+duce the approximation error in S2N’s representations. method allows efficient learning of subgraph representations
+
+without a complex model design.
+We conduct experiments with four real-world and four syn- Graph Coarsening Our S2N translation summarizes sub-
+thetic datasets to evaluate the classification performance as graphs into nodes, and in that sense, it is related to graph
+well as efficiency, including throughput, latency, parameters, coarsening (or summarization) methods (Loukas & Van-
+and memory usage. We demonstrate that models using S2N dergheynst, 2018; Loukas, 2019; Deng et al., 2020; Cai
+transformation are more efficient than existing approaches, et al., 2021; Huang et al., 2021; Zhou et al., 2021; Jin et al.,
+with similar or even better performance. Specifically, while 2022). These methods are similar to our work that aims to
+best-tuned models with S2N can process 183 – 711 times as handle large-scale graphs efficiently, but they have not been
+many samples, their classification performance shows 99.9 applied to subgraph-level tasks. Moreover, the super-nodes
+– 102.9% of the state-of-the-art model. in coarse graphs are not given to existing graph coarsen-
+The rest of the paper is organized as follows. First, we ing methods; thus, algorithms to decide on super-nodes are
+present a Subgraph-To-Node (S2N) translation, a novel way required. In S2N translation, we treat subgraphs as super-
+to generate an efficient data structure for subgraph repre- nodes and can create coarse graphs with nominal costs.
+sentation learning (§3). This section includes Coarsened
+S2N (CoS2N), the combination with graph coarsening to 3. Data Structures for Subgraph
+tackle a data-scarce setting. Second, we theoretically show
+that S2N reduces the computational complexity and approx- Representation Learning
+imates subgraph representations from the original global We introduce three data structures for subgraph represen-
+graph (§4). Third, we demonstrate the efficiency of S2N tation learning including our proposed Subgraph-To-Node
+compared to the state-of-the-art approaches, specifically en- (S2N) translation.
+abling up to 711 times the throughput while maintaining the
+performance of at least 99.9% (§5, §6). Notations We first summarize the notations in the sub-
+
+graph representation learning for classification. Let G =
+(V,A,X) be a global graph where V is a set of nodes
+
+2. Related Work (|V| = N ), A ∈ {0, 1}N×N is an adjacency matrix, and
+X ∈ RN×F0
+
+Our S2N translation tackles representation learning of sub- is a node feature matrix. A subgraph S =
+
+graphs, and this is closely linked to graph coarsening. We (Vsub,Asub) is a graph formed by subsets of nodes and edges
+introduce these fields and their connection with our study. in the global graph G. For the subgraph classification task,
+We discuss more related work in Appendix B. there is a set of M(< N) subgraphs S = {S1,S2, ...,SM},
+
+and for Si = (Vsub
+i ,Asub
+
+i ), the goal is to learn its representa-
+Subgraph Representation Learning Learning subgraph tion hi ∈ RF and the logit vector yi ∈ RC where F and C
+representations has been beneficial across various real-world are the numbers of hidden features and classes, respectively.
+problems. Researchers model higher-order interactions by
+subgraphs that nodes, edges, and graphs cannot. For ex- 3.1. Conventional Data Structures
+ample, diseases and patients in gene networks (Luo, 2022), The existing GNN-based approach employs two types of
+teams in collaboration networks (Hamidi Rad et al., 2022), data structures when solving subgraph-level tasks. This pa-
+
+2
+
+
+
+Translating Subgraphs to Nodes Makes Simple GNNs Strong and Efficient for Subgraph Representation Learning
+
+𝒮i vî = Tv(𝒮i) Node-level Encoder X̂[i,:] Prediction
+
+eî j = Te(𝒮i, 𝒮j)
+Node-level Encoder X̂[ S2N Graph
+
+
+𝒮 j,:] Encoder
+j vĵ
+𝒮 v ̂ Node-level Encoder X̂
+
+k k [k,:] Ŷ = ĤW
+Shared
+
+(a) The S2N translation. Subgraphs Si and Sj are trans- (b) Models for graphs translated by S2N. We apply a node-level encoder
+formed into nodes v̂i and v̂j by Tv , and an edge êij be- first (weighted sum for S2N+0 and GNN plus readout for S2N+A),
+tween them is formed by Te. then an S2N graph encoder (GNN) to their outputs for the prediction.
+
+Figure 1: Overview of the Subgraph-To-Node (S2N) translation and models for translated graphs.
+
+∑ ∑
+per refers to these two as Separated and Connected forms. Te(Si,Sj) = v ub
+
+i∈Vs v sub A
+j∈V [v ]. (2)
+
+i j i,vj
+The Separated form treats each subgraph as a separate graph,
+applying the GNN instance-wise for each graph. Existing When using edge weights as input, if the range of the values
+studies express these separated graphs as standalone or seg- is too wide, learning may be unstable. So, we normalize
+regated graphs and use this separated form as the main and clamp the edge weights to between 0 to 1 by selecting
+baseline. The Connected form represents subgraphs by ap- edges in a specific range of standard scores (a – b where a, b
+plying the GNN on the whole global graph and pooling node are hyperparameters).
+representations. The separated form preserves only internal ( )
+structures, and the connected form retains all information in normalize(Â) = clamp (Â−mean(Â))/std(Â)−a
+
+b−a (3)
+the global graph. For this reason, using the connected form where clamp(x) = max (0,min (1, x)) .
+requires more memory and computational resources. Since
+incorporating the structures in the global graph is essential For Tv, we use different functions for S2N+0 and S2N+A.
+in learning subgraphs, we design a new data structure that The difference between the two is whether it maintains the
+can approximate the global graph without significant costs. internal structures Asub
+
+i of the subgraph Si = (Vsub sub
+i ,Ai ).
+
+S2N+0 uses Tv that ignores Asub
+i and treats the node as a set
+
+3.2. Subgraph-To-Node (S2N) Translation (i.e., Vsub
+i ). In contrast, S2N+A’s Tv retains all information
+
+of nodes and edges in the subgraph:
+The S2N translation reduces memory and computational
+costs by constructing a new coarse graph that summarizes S2N+0: T sub
+
+v(Si) = Vi , S2N+A: Tv(Si) = (Vsub
+i ,Asub
+
+i ). (4)
+the original subgraph into a node. As in Figure 1a, for each Note that their names originated from whether the adjacency
+subgraph Si ∈ S in the global graph G, we create a node matrix is a zero matrix (0) or not (A).
+v̂i = Tv(Si) in the translated graph Ĝ; for all pairs (Si,Sj)
+of subgraphs in G, we assign an edge êij = Te(Si,Sj) We can enhance the input features X by incorporating struc-
+between corresponding nodes in Ĝ. Here, Tv and Te are tural encoding, thereby preserving more information when
+translation functions for nodes and edges in Ĝ, respectively. S2N summarizes global structures. In this paper, we adopt
+Formally, the S2N translated graph Ĝ = (V̂, Â) where Random Walk Positional Encoding (RWPE) (Dwivedi et al.,
+|V̂| = M and Â ∈ RM×M , is defined by 2022) that encodes the k-hop topology of the global graph
+
+for each node. The efficiency of S2N is maintained since
+V̂ = {Tv(Si) | Si ∈ S}, Â[i,j] = Te(Si,Sj). (1) RWPE is computed once before training and only requires
+
+We can choose any function for T the space complexity of O(N).
+v and Te. For example,
+
+Te can be simple heuristics (e.g., the distance between sub-
+graphs) or modeled with neural networks to learn the graph 3.3. Models for S2N Translated Graphs
+structure (Franceschi et al., 2019; Kim & Oh, 2021; Fatemi We propose simple but strong models for S2N (Figure 1b):
+et al., 2021). node-level encoder ENCnode and S2N graph encoder ENCS2N.
+In this paper, we choose two versions of S2N functions with First, ENCnode takes Tv(S) as an input and produces x̂i ∈
+negligible costs: S2N+0 and S2N+A. For both versions, RF , input vector for the node in the S2N graph. Then,
+we use the same T ENC
+
+e to make an edge and its weight as the S2N takes X̂ = [x̂1, ..., x̂M ]⊤ ∈ RM×F and Â as
+number of edges between two subgraphs Si and Sj , which inputs, and produces representations Ĥ = [ĥ1, ..., ĥM ]⊤ ∈
+is defined as follows: RM×F and logits Ŷ = [ŷ1, ..., ŷM ]⊤ ∈ RM×C .
+
+3
+
+
+
+Translating Subgraphs to Nodes Makes Simple GNNs Strong and Efficient for Subgraph Representation Learning
+
+𝒮i v in the global graph. Here, we call them ‘virtual subgraphs.’
+î Using the original (labeled) subgraphs S as is, the virtual
+
+subgraphs are merged with S to form the Coarsened S2N
+(CoS2N) graph, formally,
+
+Input
+2. Coarsened S2N Sco = Coarsening(G), Âco
+
+[i,j] = Te(Si,Sj)
+1. Virtual (6)
+
+Subgraphs by 𝒮 vĵ where (Si,Sj) ∈ (S ∪ Sco)× (S ∪ Sco).
+
+Coarsening j
+Here, any algorithm that coarsens the graph can be used for
+Coarsening(G) (See §2).
+
+Figure 2: Overview of Coarsened Subgraph-To-Node
+(CoS2N) Translation with virtual subgraphs generated by Training of CoS2N is done similarly to semi-supervised
+graph coarsening. node classification. The virtual (unlabeled) subgraphs act
+
+as bridges to pass messages between labeled subgraphs.
+These allow S2N to better approximate the global graph
+
+For ENCnode, we use different models for S2N+0 and that the existing set of subgraphs does not cover. We also
+S2N+A. Since the node in S2N+0 is a set of original nodes show that adding virtual subgraphs to S2N can reduce the
+in Si, we take a set of node features in Vi as an input and approximation error between representations of S2N and
+generate a weighted sum of them. For S2N+A, we apply a the global graph (Proposition 4.3).
+GNN model to each subgraph as an individual graph, then
+apply a weighted∑sum for readout. Formally, The graph coarsening does not impair the efficiency for
+
+two reasons. First, it is performed only once before the
+S2N+0: x̂i = ∑v∈Vsub ωvi ·X training. Second, we can create a small CoS2N graph by
+
+[v,:],
+i (5) tuning coarsening methods and their hyperparameters (e.g.,
+
+S2N+A: x̂i = v∈Vsub ωvi · GNNnode(X ,Asub
+[Vsub :]
+
+i i , i )[v,:], the coarsening ratio).
+
+where ωvi is a weight corresponding to the node v and
+the subgraph Si. These weights can be either learnable or 4. Theoretical Analysis on S2N
+constants (e.g., ω = 1 means that x̂ is the sum of features). This section analytically compares the efficiency and the
+Given Â and X̂ of S2N+0 and S2N+A, we apply the S2N representation quality between S2N and the original graph.
+graph encoder ENCS2N which is another GNNS2N to gen- We first show how much S2N reduces computational com-
+erate the final node representations Ĥ and logits Ŷ for plexity. Then, we analyze the error bound of representations
+prediction, That is, Ĥ = GNNS2N(X̂, Â) and Ŷ = ĤW between S2N and the original graph. All proofs are provided
+where W ∈ RF×C is a matrix of parameters. We can take in Appendix D.
+any GNNs that perform message-passing between nodes.
+This node-level message-passing on translated graphs is 4.1. How Much Does S2N Reduce Computational
+analogous to message-passing at the subgraph level in Sub- Complexity?
+GNN (Alsentzer et al., 2020).
+
+We introduce more notations for this analysis. For the global
+
+3.4. Coarsened S2N for a Data-Scarce Setting graph G and the S2N graph Ĝ, the numbers of edges are E
+and Ê. Across a set S of subgraphs, the average numbers
+
+By design, the S2N graph Ĝ can approximate the global of nodes and edges are N sub and Esub. Note that N is the
+graph G covered by subgraphs, but cannot reflect parts of G number of nodes in G and M is the number of subgraphs.
+where subgraphs do not exist. When a pair of subgraphs is In Proposition 4.1, we compare the time complexity of
+distant on the global graph, they exist as unconnected nodes single-layer GLASS (the state-of-the-art model) (Wang &
+in S2N graphs as illustrated in Figure 2. These isolated Zhang, 2022), Connected form, S2N+0, and S2N+A.
+subgraphs are likely to occur when the subgraph samples
+are scarce. In this case, GNNs cannot exchange supervised Proposition 4.1. The time complexity of the 1-layer GLASS,
+
+Connected form, S2N+0, and S2N+A is
+signals between subgraphs.
+
+GLASS & Connected: O(EF +MN subF +NF 2), (7)
+To solve this problem, we apply graph coarsening methods
+to the global graph G to generate a partition of nodes in G. S2N+0: O(ÊF +MN subF +MF 2), (8)
+
+That is, graph coarsening summarizes a graph G by grouping S2N+A: O(ÊF +MEsubF +MN subF 2). (9)
+its nodes into super-nodes. Each node in G corresponds to
+one super-node in the new graph Ĝ. We construct induced Considering that N ≪ E in real-world graphs (Chung,
+subgraphs Sco = {Sco
+
+1 ,Sco
+2 , ...,Sco
+
+M co} for each super-node 2010), the significant difference between baselines and S2N
+
+4
+
+
+
+Translating Subgraphs to Nodes Makes Simple GNNs Strong and Efficient for Subgraph Representation Learning
+
+is that E becomes Ê. We can know that Ê cannot be higher We now demonstrate that the S2N’s node representations
+than M2. The smaller N sub, the smaller Ê since it lowers the Ĥ approximate the global graph’s subgraph representations
+number of possible connections between nodes in subgraphs. R⊤H , particularly when the model is a single-layer GCN.
+However, it is difficult to directly compare Ê and E without The error bound between Ĥ and R⊤H is introduced in
+assumptions of the global graph and subgraphs. Proposition 4.3. We also conduct a similar analysis for
+Thus, we investigate what Ê takes in the random graph Graph Isomorphism Networks (Xu et al., 2019) in Corol-
+model as a global graph, specifically, the Configuration lary D.6 (Appendix D).
+Model (CM). The CM graph of N nodes is randomly gen- Proposition 4.3. Using the single-layer GCN parametrized
+erated from a given degree sequence [d by W , subgraph representations R⊤H of the global graph
+
+1, d2, ..., dN ] (New-
+man, 2018). Note that CM can model graphs of arbitrary G can be approximated by node representations Ĥ of the
+degree distributions, so its assumptions are mild compared S2N graph Ĝ, that is, Ĥ ≈ R⊤H . The error between two
+to other models (See Appendix C for details). For the CM representations is bounded by:
+global graph with independent and identically distributed ∥R⊤H − Ĥ∥ ≤ 1
+
+M 2 ∥X −RX̂∥ · ∥W ∥. (12)
+(i.i.d.) subgraphs, we analyze the distribution of S2N’s edge
+weights (i.e., Â) and demonstrate the probability that an The error between representations is bounded by the error
+edge weight is higher than a certain value. This probability between input features X and RX̂ . As in Zhou et al. (2023),
+is proportional to the number of S2N edges after normaliza- if we use the initial features X̂ = R⊤X for S2N, RX̂ is
+
+(RR⊤)X . The matrix RR⊤ ∈ RN×N
+tion (Equation 3). The smaller this is, the smaller Ê. has rank M(< N),
+Proposition 4.2. For Configuration Model as G and i.i.d. then RX̂ is a low-rank approximation of X . Since R is
+sampled subgraphs where the average size is N sub, the prob- given by subgraphs, RX̂ may not sufficiently approximate
+ability that the weight Â[i,j] of an edge (i, j) in Ĝ is bigger X for the downstream task. In particular, when there are
+
+only a few subgraph samples (i.e., very small rank M ), the
+than c > 0 is P (Â[i,j] ≥ c) ≤ (N sub)2E[d]
+
+cN where E[d] is an expressiveness of S2N can be weakened. This theoretical
+average degree of G. observation implies that the proposed CoS2N (§3.4) higher-
+It is well-known that degrees follow a power-law distribution rank approximates X for a data-scarce setting.
+in many real-world graphs (Barabási & Albert, 1999). Most
+nodes have a low degree; thus, the average degree E[d] has 5. Experiments
+a small value. Proposition 4.2 implies that edges with small
+weights are more likely to appear in S2N, and the edge This section describes the experimental setup, including
+normalization can make the S2N graph sparse (i.e., small datasets, training, evaluation, and models.
+Ê). We also empirically confirm that edges in S2N are fewer
+than those of the global graph in Table 1. Datasets We use four real-world datasets (PPI-BP, HPO-
+
+Neuro, HPO-Metab, and EM-User) and four synthetic datasets
+4.2. How Does S2N Approximate Subgraph (Density, Cut-Ratio, Coreness, and Component) introduced
+
+Representations? in Alsentzer et al. (2020). The task is subgraph classifica-
+tion, where the global graph G and subgraphs S are given.
+
+For this subsection, we define the mapping matrix M ∈ The input node features X are pre-trained embedding from
+{0, 1}N×M , where M[v,i] is 1 if and only if the node v Wang & Zhang (2022) for real-world datasets and constant
+belongs to the subgraph Si (i.e., Â = M⊤AM ). Degree features for synthetic datasets. Dataset statistics and descrip-
+matrices of G and Ĝ are D = diag(d1, d2, ..., dN ) and D̂ = tions are in Tables 4, 5, and Appendix E.
+diag(d̂1, d̂2, ..., d̂M ). Also, ∥·∥ is the Frobenius norm.
+
+Training and evaluation In the original setting from
+This analysis aims to analytically compare node represen- Alsentzer et al. (2020), evaluation (i.e., validation and test)
+tations Ĥ ∈ RM×F of the S2N graph Ĝ and subgraph subgraphs cannot be seen during the training stage. Follow-
+representations of the global graph G. Since outputs of ing this protocol, we create different S2N graphs for each
+GNN with the global graph are original nodes’ representa- stage using train and evaluation sets of subgraphs (Strain and
+tions H ∈ RN×F , we apply the readout to pool nodes in Seval). For the S2N translation, we use Strain only in the train-
+the subgraph where R ∈ RN×M is a readout matrix: ing stage and use both Strain ∪ Seval in the evaluation stage.
+
+READOUT(H) = R⊤H ∈ RM×F . (10) We predict unseen nodes based on structures translated from
+Strain ∪ Seval in the evaluation stage. In this respect, node
+
+In this paper, we adopt a degree-dependent readout matrix classification on S2N-translated graphs is inductive.
+R inspired by configuration-based reconstruction (Zhou
+et al., 2021; 2023), which is defined as follows: Models We use two well-known GNNs for GNNS2N:
+
+1 1
+R = D 2MD̂− 1
+
+2 i.e., R[v,i] = (dv/d̂i) 2 . (11) GCN (Kipf & Welling, 2017) and GCNII (Chen et al., 2020).
+
+5
+
+
+
+Translating Subgraphs to Nodes Makes Simple GNNs Strong and Efficient for Subgraph Representation Learning
+
+Table 1: The number of nodes and edges of real-world Table 2: Mean performance in micro F1-score on real-world
+graphs before and after S2N translation. The number of datasets over 10 runs. For the top 50% of results, the higher
+edges in S2N is averaged across all experiments. the performance, the darker the blue color. The unpaired
+
+t-test result with the best is denoted by superscripts at a
+PPI-BP HPO-Neuro HPO-Metab EM-User level of 0.01 (∗: significantly outperforms, ∼: no significant
+
+# Nodes Original 1.7× 104 1.5× 104 1.5× 104 5.7× 104
+
+S2N 1.6× 103 4.0× 103 2.4× 103 3.2× 102 difference). We mark with daggers reprinted results from
+# Edges Original 3.2× 105 3.2× 106 3.2× 106 4.6× 106 Alsentzer et al. (2020) (†) and Wang & Zhang (2022) (‡).
+
+S2N 4.8× 103 6.3× 105 6.0× 104 3.0× 103
+
+Model PPI-BP HPO-Neuro HPO-Metab EM-User
+Sub2Vec† 30.9±2.3 22.3±6.5 13.2±4.7 85.9±1.4
+
+For the node-level encoder GNNnode in S2N+A, we use the GBDT‡ 44.6±0.0 51.3±0.0 40.4±0.0 69.4±0.0
+
+same kind of GNN as GNNS2N. See Appendix F for their SubGNN† 59.9±2.4 63.2±1.0 53.7±2.3 81.4±4.6
+
+hyperparameters. We also test these models for connected GLASS‡ 61.9±0.7 68.5±0.5 61.4±0.5 88.8±0.6
+
+Sep. GCN 61.4±2.0 67.6±1.0 60.1±2.8 84.5
+and separated forms. ±4.1
+
+Sep. GCNII 61.3±1.2 67.7±0.6 59.4±2.7 84.7±4.1
+Con. GCN 62.6±1.7 65.7±0.8 60.6±2.0 85.9±2.8
+
+Baselines We use basic and state-of-the-art models for Con. GCNII 63.5±2.0 66.7±0.8 61.7±2.7 85.5±4.8
+
+subgraph classification tasks as baselines: Sub2Vec (Ad- S2N+0 GCN 63.0∼±2.3 66.4±0.7 62.0∼±1.6 85.7±2.9
+
+hikari et al., 2018), GBDT, SubGNN (Alsentzer et al., 2020), S2N+0 GCNII 63.5∼±2.4 66.4±1.1 61.6∼±1.7 86.5∼±3.2
+S2N+A GCN 63.3∼±2.3 68.3∼±0.9 62.0∼±3.0 86.5
+
+and GLASS (Wang & Zhang, 2022). We report the best per- ±2.3
+
+S2N+A GCNII 63.7∼±2.3 68.4∼±1.0 63.2∼±2.7 89.0∼±1.6
+formance among the variants of Sub2Vec. All baseline with RWPE
+results are reprinted from Alsentzer et al. (2020) and Wang S2N+0 GCN 63.1∼±2.2 66.7±0.6 62.3∼±1.9 85.9±2.8
+
+& Zhang (2022). S2N+0 GCNII 63.5∼±1.7 66.7±0.6 62.3∼±1.1 86.5∼±4.7
+S2N+A GCN 63.4∼±2.0 68.4∼±0.7 61.9∼±2.3 87.3∼±9.7
+S2N+A GCNII 64.3∗±1.8 68.6∼±0.8 63.9∗±1.7 89.0∼
+
+Efficiency measurement We use each model’s best hy- ±3.1
+
+perparameters (including batch sizes) and take the mean
+wall-clock time over 50 epochs. Throughput and latency are
+all measured using training and validation sets for each stage. 6.1. Analysis of S2N-Translated Graphs
+We count the number of all trainable parameters, including Table 1 summarizes the number of nodes and edges be-
+node embeddings. The maximum allocated GPU VRAM fore and after S2N translation. These statistics are from
+is measured by the PyTorch API. We fix the computation S2N graphs (S2N+0 and S2N+A) tuned for the best per-
+device as Intel(R) Xeon(R) CPU E5-2640 v4 and a single formance on GCN and GCNII. The translated graphs have
+GeForce GTX 1080 Ti in measuring efficiency metrics. We a smaller number of nodes (×0.006 – ×0.27) and edges
+describe details in Appendix G. (×10−4 – ×0.45) than the original graphs. See Appendix H
+
+for detailed discussion. We also find that they are non-
+Data-scarce experiments Experiments in a data-scarce homophilous, meaning many connected node pairs differ in
+setting are conducted on benchmarks with the smallest and their class. The edge homophily of S2N graphs is 0.25±0.01
+largest global graphs (PPI-BP and EM-User), and we set the for PPI-BP, 0.20 ± 0.03 for HPO-Neuro1, 0.24 ± 0.01 for
+number of training samples per class to 10, 20, 40, and HPO-Metab, and 0.51± 0.01 for EM-User.
+80. To coarse the global graph, we employ the Variation
+Edges method (Loukas, 2019) and select the coarsening 6.2. Performance
+ratio that generates subgraphs smaller than average sizes.
+All experiments use GCNII, which performs well across Real-World Datasets In Table 2, we report the micro F1-
+datasets in a fully supervised setting. score on real-world datasets. We confirm that S2N with
+
+simple GNN models outperforms or is similar to GLASS,
+
+6. Results and Discussions the state-of-the-art model. In 16 experiments (4 datasets and
+4 models), S2N models outperform GLASS in 9 cases and
+
+We analyze the characteristics of S2N graphs and compare SubGNN in all 16 cases. Moreover, S2N models are on par
+our models and baselines on classification performance and with GLASS in 12 of 16 experiments; they have no signif-
+efficiency. We show that S2N translation results in graph icant difference at the level of 0.01. The best models with
+compression (§6.1), which results in better or similar clas- S2N show 102.9% (PPI-BP), 99.9% (HPO-Neuro), 102.9%
+sification accuracy (§6.2) but significantly improves effi- (HPO-Metab), and 100.2% (EM-User) of GLASS’s perfor-
+ciency in terms of computation and memory (§6.3). Finally, 1We propose multi-label edge homophily for multi-label
+we study Coarsened S2N (CoS2N)’s performance and effi- datasets (HPO-Neuro). It generalizes the existing multi-class ho-
+ciency in a data-scare setting (§6.4). mophily, and we discuss more in Appendix I.
+
+6
+
+
+
+Translating Subgraphs to Nodes Makes Simple GNNs Strong and Efficient for Subgraph Representation Learning
+
+Table 3: Mean performance in micro F1-score on synthetic since it takes more than 48 hours in pre-computation. We
+datasets over 10 runs. For the top 50% of results, the higher make the following five observations from these results.
+the performance, the darker the blue color. The unpaired
+t-test result between S2N and the best is denoted by super-
+scripts (∼: no significant difference at a level of 0.01). We S2N models show significantly high throughput (Fig. 3a).
+mark with daggers the reprinted results from Alsentzer et al. The best S2N models can process ×183 – ×711 more sam-
+(2020) (†) and Wang & Zhang (2022) (‡). ples than the state-of-the-art model (GLASS) for the same
+
+training time. At the evaluation stage, they show 7 – 56
+Model Density Cut-Ratio Coreness Component times higher throughput than GLASS. This difference is not
+Sub2Vec‡ 45.9±1.2 35.4±1.4 36.0±1.9 65.7±1.7
+
+SubGNN† as large as the training stage, but S2N is still significantly
+91.9±1.6 62.9±3.9 65.9±9.2 95.8±9.8 more efficient than GLASS. In addition, S2N shows higher
+
+GLASS‡ 93.0±0.9 93.5±0.6 84.0±0.9 100.0±0.0
+
+S2N+0 training throughput than connected and separated forms.
+GCNII 67.2±2.4 56.0±0.0 57.0±4.9 100.0∼±0.0
+
+S2N+A GCNII 93.2∼±2.6 56.0±0.0 85.7∼±5.8 100.0∼±0.0
+with RWPE
+S2N+0 S2N models even with full batch show lower latency than
+
+GCNII 74.8±3.6 85.2±5.1 56.1±3.0 100.0∼±0.0
+S2N+A GCNII 93.6∼±2.0 89.2±2.6 72.6±6.2 100.0∼ others with small batch size (Fig. 3b). Comparing the
+
+±0.0
+best S2N model and GLASS, the training latency is ×0.05 –
+×0.17 and evaluation latency is ×0.16 – ×0.43. Note that
+
+mances. We interpret that message-passing between sub- measuring latency ignores the parallelism from large batch
+graphs in S2N improves performance by capturing distant sizes. S2N’s superiority over other data structures can be
+interactions that cannot occur in message-passing between underestimated in latency rather than throughput because it
+nodes in the global graph. We also observe that RWPE requires full batch computation. Note that existing models
+generally increases performance. S2N models with RWPE need to use small batch sizes because of intensive memory
+are on par with GLASS in 14 cases and outperform in 13 requirements (SubGNN) or model design (GLASS).
+cases. Plus, S2N+A outperforms S2N+0; internal structure
+also contributes to subgraph representation. However, the S2N models require less memory even with a similar
+importance of internal structures varies across datasets. For level of parameters (Fig. 3c). For a given dataset, the
+HPO-Neuro as an example, the performance improvement of number of parameters of each model does not vary much,
+S2N+A over S2N+0 is high compared to other datasets. but the GPU VRAM in actual runtime varies by a large
+
+margin. The best models with S2N need less memory (×0.2
+Synthetic Datasets In Table 3, we summarize the per- – ×0.45) than GLASS except for HPO-Neuro. HPO-Neuro,
+formance of S2N models with GCNII and baselines on which has a large number of subgraphs, requires the same
+synthetic datasets. S2N+A performs better than or the same level of memory (×1.05). In particular, since S2N does not
+as the state-of-the-art (GLASS) on Density, Coreness, and employ a large global graph, S2N works with only ×0.13
+Component. S2N+0 shows the same performance as GLASS memory on average compared to the connected form.
+only in Component. We can explain these results through
+known subgraph properties associated with synthetic labels
+(Table 6). Because S2N compresses the global graph struc- S2N+A does not show a significant difference from
+ture, it is challenging to learn Cut-Ratio, which requires exact S2N+0 in efficiency. Recall that S2N+A differs from
+information about the global structure. Learning the density S2N+0 by using the internal edges of subgraphs. How-
+and coreness of subgraphs requires their internal structures. ever, the number of internal edges is negligible compared
+Therefore, S2N+0, which does not maintain internal struc- to the original global edges, as in Table 4. Consequently,
+ture, relatively underperforms baselines. RWPE allows S2N the added internal edges require only a small amount of
+to improve the performance of Density and Cut-Ratio signif- additional computation and memory, allowing S2N+A to
+icantly, but not of Coreness. We interpret that RWPE for perform training and inference efficiently.
+subgraphs can encode internal and border structures well but
+cannot encode border positions. We leave the development
+of structural encoding for S2N as future work. Overall, S2N models outperform baselines in all compu-
+
+tational and memory efficiency metrics. Models with
+6.3. Efficiency S2N process many samples faster (i.e., higher throughput
+
+and lower latency), and require less GPU memory than other
+In Figure 3, we show throughput, latency, the number of data structures and state-of-the-art models. The separated
+parameters, and the maximum allocated GPU VRAM of form, which does not use a global graph, shows a similar
+two models with three data structures and state-of-the-art level of efficiency as S2N in some experiments but loses
+baselines. We cannot experiment on PPI-BP with SubGNN performance by completely ignoring the global structure.
+
+7
+
+
+
+Translating Subgraphs to Nodes Makes Simple GNNs Strong and Efficient for Subgraph Representation Learning
+
+105 Dataset = HPO-Metab Dataset = HPO-Neuro Dataset = EM-User Dataset = PPI-BP
+Data structure
+
+S2N+0
+104
+
+’ , S2N+A
+x12 웅,'  x7 
+
+X14 -'- - - I
+I 
+
+I -1- - - .. Connected
+I 
+
+103 +- !- - - -1- - - .. +- - - - I
+
+!.  ＿ __ L, x56 
+I x205 Separated
+
+■ x183  i 
+• x303 Baseline
+
+I 
+
+I Model
+102 I 
+
++--f---.i--- 』 GCN
+x7마1 GCNII
+
+101 SubGNN
+101 102 103 104 105 101 102 103 104 105 101 102 103 104 105 101 102 103 104 105 GLASS
+
+Train Throughput (#/s) Train Throughput (#/s) Train Throughput (#/s) Train Throughput (#/s)
+
+(a) The throughput (the number of subgraphs / second) at training and evaluation stages. The higher, the better.
+
+Dataset = HPO-Metab Dataset = HPO-Neuro Dataset = EM-User Dataset = PPI-BP
+Data structure
+
+0.15 S2N+0
+S2N+A
+Connected
+
+0.10 Separated
+Baseline
+
+ .16 Model
+0.05 I X0 • 36 : x0 GCN
+
+- - ---..’ x0 • 43 - - x0.-11| ’ I
+- -r. - .. x0 • 05 | , x0 .07 GCNII
+
+’
+,- ,- - - - - - - - - - - - - - - - I.. 
+
+0.00 x0.17 - - - - - - -  . - .. x0 .26 SubGNN
+0.0 0.1 0.2 0.3 0.4 0.0 0.1 0.2 0.3 0.4 0.0 0.1 0.2 0.3 0.4 0.0 0.1 0.2 0.3 0.4 GLASS
+
+Train Latency (s/forward) Train Latency (s/forward) Train Latency (s/forward) Train Latency (s/forward)
+
+(b) The latency (seconds / forward pass) at training and evaluation stages. The lower, the better.
+
+104 Dataset = HPO-Metab Dataset = HPO-Neuro Dataset = EM-User Dataset = PPI-BP
+Data structure
+
+S2N+0
+S2N+A
+
+103 --
++-- xl.05 I Connected
+
+I
+
+�9- .. X0 • 45 I X0. 2 Separated
+I · -
+
+- .. I Baseline
+I 
+
+102 X0. 2
+I Model
+
+- .. GCN
+GCNII
+
+101 SubGNN
+106 107 106 107 106 107 106 107 GLASS
+
+# parameters # parameters # parameters # parameters
+
+(c) The number of parameters and maximum allocated GPU VRAM. The lower, the better.
+
+Figure 3: Efficiency of S2N models and baselines on real-world datasets. The ratio of the best S2N model and the state-of-
+the-art model for each metric is notated in the figure (dashed lines).
+
+6.4. Performance and Efficiency in a Data-Scarce training samples is extremely small, both S2N and CoS2N
+Setting demonstrate superior performance compared to both base-
+
+line models. We confirm that the message-passing between
+In this section, we report the performance and efficiency of subgraphs is more effective when supervised signals are
+S2N, Coarsened S2N (CoS2N), connected form, and sepa- scarce. In conclusion, CoS2N approximates representations
+rated form. Figure 4 summarizes the performance, through- of the global graph well, even though the virtual subgraphs
+put, and max allocated VRAM by the number of training created through coarsening do not follow the distribution of
+samples on PPI-BP. In Appendix L, we analyze similar re- real subgraphs.
+sults on the other dataset and the ablation study on the
+coarsening ratio.
+
+CoS2N has higher throughput (Figures 4b, 4c) and uses
+Virtual subgraphs created in Coarsened S2N contribute less memory (Figure 4d) than using the global graph.
+to performance improvements of S2N (Figure 4a). We Although the virtual subgraphs by coarsening are added,
+observe that CoS2N consistently outperforms S2N in all both CoS2N methods show higher throughput than using
+conditions. This implies that virtual subgraphs created the global graph (i.e., the connected form). CoS2N+0 even
+from graph coarsening in CoS2N enhance communica- shows higher throughput than the separated form in all
+tions between subgraphs, leading to better representations. stages. CoS2N+A shows higher throughput than the sep-
+CoS2N+A generally surpasses all other models, including arated form in the evaluation stage, where there are more
+CoS2N+0 and the connected form. When the number of subgraphs to be processed. The training throughput in-
+
+8
+
+Max Allocated VRAM (MB) Eval Latency (s/forward) Eval Throughput (#/s)
+
+
+
+Translating Subgraphs to Nodes Makes Simple GNNs Strong and Efficient for Subgraph Representation Learning
+
+3 × 104 103
+
+0.5
+Data structure
+
+104 2 × 104 S2N+0
+102 S2N+A
+
+CoS2N+0
+0.4 CoS2N+A
+
+Connected
+Separated
+
+0.3 103 104
+101
+
+10 20 40 80 10 20 40 80 10 20 40 80 10 20 40 80
+# training samples / class # training samples / class # training samples / class # training samples / class
+
+(a) Performance (b) Training Throughput (c) Eval Throughput (d) Max allocated VRAM
+
+Figure 4: Performance and efficiency on PPI-BP of S2N, CoS2N, connected, and separated forms by the number of training
+samples in a data-scarce setting.
+
+creases as more training samples are used since the full 8. Conclusion
+batch parallelization of GPUs can efficiently process addi-
+tional samples. Subgraph-to-node (S2N) translation is a novel, efficient way
+
+to learn representations of subgraphs. S2N takes the orig-
+Like computational requirements, CoS2N uses less memory inal subgraphs and creates a new graph where the nodes
+than the connected form. This is because graph coarsening are the subgraphs, and the edges are the relations between
+creates fewer subgraphs than the size of the global graph. the subgraphs, thereby performing subgraph-level tasks as
+By the training set size, the memory consumption is con- node-level tasks. We empirically and theoretically show
+stant for the connected form and fluctuates for CoS2N. The that S2N translation significantly reduces memory and com-
+memory bottleneck of the connected form and CoS2N is putation costs without performance degradation. Specifi-
+the largest component of each dataset: the global graph cally, the best-performing models with S2N on real-world
+and coarsened nodes, respectively. Adding training samples datasets show ×183−×711 of throughput and achieve at
+does not substantially affect memory demand; instead, the least 99.9% of the state-of-the-art models for classification
+size of the coarse graph does for CoS2N. performance.
+
+7. Limitations and Future Work Acknowledgements
+This section discusses the limitations and future work. First, This research was supported by the Engineering Research
+a large S2N graph will be generated if there are excessive Center Program through the National Research Foundation
+subgraphs. This is because the current method translates all of Korea (NRF) funded by the Korean Government MSIT
+subgraphs into nodes in the S2N graph. Future research is (NRF-2018R1A5A1059921)
+needed to sample important subgraphs that sparsely summa-
+rize the original global graph. Second, we can observe that
+the performance of S2N varies depending on the dataset, but Impact Statement
+this can be known once experiments are conducted. Practi- This paper aims to advance the field of graph representation
+tioners can only know which data structures or models are learning, and it is difficult to expect direct societal conse-
+appropriate for a given task by empirical experiments. We quences. Instead, we discuss a potential concern about bias
+leave it to future work to identify which subgraph charac- and fairness that has not been confirmed in theory or prac-
+teristics affect the performance of models, including S2N. tice. Models with S2N pass messages between all samples
+Lastly, we need synthetic tasks for better evaluation. For within the batch; thus, the majority in a batch can be over-
+synthetic datasets, labels are created by pre-designed rules represented during prediction and the bias in representations
+that depend only on structures (e.g., density, cut ratio, and can be amplified. The tasks covered in this paper are unre-
+core numbers). These datasets reflect only a very narrow lated to this, but practitioners should be aware of this for
+aspect of a subgraph’s properties. However, the labels of tasks that contain sensitive attributes.
+real-world subgraphs depend on various information about
+the structures and features. This implies a gap between
+synthetic and real-world subgraphs, and future studies are
+required to develop more realistic synthetic tasks.
+
+9
+
+Performance
+
+Train Throughput (#/s)
+
+Eval Throughput (#/s)
+
+Max Allocated VRAM (MB)
+
+
+
+Translating Subgraphs to Nodes Makes Simple GNNs Strong and Efficient for Subgraph Representation Learning
+
+References Deng, C., Zhao, Z., Wang, Y., Zhang, Z., and Feng, Z.
+Adhikari, B., Zhang, Y., Ramakrishnan, N., and Prakash, Graphzoom: A multi-level spectral approach for accurate
+
+B. A. Sub2vec: Feature learning for subgraphs. In and scalable graph embedding. In International Confer-
+Pacific-
+
+ence on Learning Representations, 2020. URL https:
+Asia Conference on Knowledge Discovery and Data Min-
+ing, pp. 170–182. Springer, 2018. //openreview.net/forum?id=r1lGO0EKDH.
+
+Akiba, T., Sano, S., Yanase, T., Ohta, T., and Koyama, M. Dong, Z., Cao, W., Zhang, M., Tao, D., Chen, Y., and Zhang,
+Optuna: A next-generation hyperparameter optimization X. Cktgnn: Circuit graph neural network for electronic
+framework. In Proceedings of the 25th ACM SIGKDD design automation. In The Eleventh International Confer-
+international conference on knowledge discovery &amp; ence on Learning Representations, 2023.
+data mining, pp. 2623–2631, 2019. Dwivedi, V. P., Luu, A. T., Laurent, T., Bengio, Y., and Bres-
+
+Alsentzer, E., Finlayson, S. G., Li, M. M., and Zitnik, M. son, X. Graph neural networks with learnable structural
+Subgraph neural networks. Proceedings of Neural Infor- and positional representations. In International Confer-
+mation Processing Systems, NeurIPS, 2020. ence on Learning Representations, 2022.
+
+Ashburner, M., Ball, C. A., Blake, J. A., Botstein, D., Butler, Falcon, W. and The PyTorch Lightning team. PyTorch
+H., Cherry, J. M., Davis, A. P., Dolinski, K., Dwight, S. S., Lightning, 3 2019. URL https://github.com/
+
+Eppig, J. T., et al. Gene ontology: tool for the unification PyTorchLightning/pytorch-lightning.
+of biology. Nature genetics, 25(1):25–29, 2000. Fatemi, B., El Asri, L., and Kazemi, S. M. Slaps: Self-
+
+Barabási, A.-L. Network science. Philosophical Transac- supervision improves structure learning for graph neural
+tions of the Royal Society A: Mathematical, Physical and networks. Advances in Neural Information Processing
+Engineering Sciences, 371(1987):20120375, 2013. Systems, 34, 2021.
+
+Barabási, A.-L. and Albert, R. Emergence of scaling in Fey, M. and Lenssen, J. E. Fast graph representation learning
+random networks. science, 286(5439):509–512, 1999. with PyTorch Geometric. In International Conference on
+
+Learning Representations Workshop on Representation
+Bordes, A., Chopra, S., and Weston, J. Question answering Learning on Graphs and Manifolds, 2019.
+
+with subgraph embeddings. In Proceedings of the 2014
+Conference on Empirical Methods in Natural Language Franceschi, L., Niepert, M., Pontil, M., and He, X. Learning
+Processing (EMNLP), pp. 615–620, 2014. discrete structures for graph neural networks. In Interna-
+
+tional conference on machine learning, pp. 1972–1982.
+Brody, S., Alon, U., and Yahav, E. How attentive are graph PMLR, 2019.
+
+attention networks? In International Conference on
+Learning Representations, 2022. Hamidi Rad, R., Bagheri, E., Kargar, M., Srivastava, D., and
+
+Szlichta, J. Subgraph representation learning for team
+Cai, C., Wang, D., and Wang, Y. Graph coarsening with neu- mining. In Proceedings of the 14th ACM Web Science
+
+ral networks. In International Conference on Learning Conference 2022, pp. 148–153, 2022.
+Representations, 2021. URL https://openreview.
+net/forum?id=uxpzitPEooJ. Hartley, T., Lemire, G., Kernohan, K. D., Howley, H. E.,
+
+Adams, D. R., and Boycott, K. M. New diagnostic ap-
+Chen, M., Wei, Z., Huang, Z., Ding, B., and Li, Y. Sim- proaches for undiagnosed rare genetic diseases. Annual
+
+ple and deep graph convolutional networks. In Interna- review of genomics and human genetics, 21:351–372,
+tional Conference on Machine Learning, pp. 1725–1735. 2020.
+PMLR, 2020.
+
+He, K., Zhang, X., Ren, S., and Sun, J. Deep residual learn-
+Chung, F. Graph theory in the information age. Notices of ing for image recognition. In Proceedings of the IEEE
+
+the AMS, 57(6):726–732, 2010. conference on computer vision and pattern recognition,
+pp. 770–778, 2016.
+
+Consortium, G. O. The gene ontology resource: 20 years
+and still going strong. Nucleic acids research, 47(D1): Huang, Z., Zhang, S., Xi, C., Liu, T., and Zhou, M. Scaling
+D330–D338, 2019. up graph neural networks via graph coarsening. In Pro-
+
+ceedings of the 27th ACM SIGKDD Conference on Knowl-
+Dehghani, M., Tay, Y., Arnab, A., Beyer, L., and Vaswani, edge Discovery & Data Mining, pp. 675–684, 2021.
+
+A. The efficiency misnomer. In International Conference
+on Learning Representations, 2022. URL https:// Ioffe, S. and Szegedy, C. Batch normalization: Accelerating
+openreview.net/forum?id=iulEMLYh1uR. deep network training by reducing internal covariate shift.
+
+10
+
+
+
+Translating Subgraphs to Nodes Makes Simple GNNs Strong and Efficient for Subgraph Representation Learning
+
+In International conference on machine learning, pp. 448– Loukas, A. and Vandergheynst, P. Spectrally approximating
+456. PMLR, 2015. large graphs with smaller graphs. In International Con-
+
+ference on Machine Learning, pp. 3237–3246. PMLR,
+Jin, W., Barzilay, R., and Jaakkola, T. Junction tree vari- 2018.
+
+ational autoencoder for molecular graph generation. In
+International conference on machine learning, pp. 2323– Luo, Y. Shine: Subhypergraph inductive neural network.
+2332. PMLR, 2018. Advances in Neural Information Processing Systems, 35:
+
+18779–18792, 2022.
+Jin, W., Zhao, L., Zhang, S., Liu, Y., Tang, J., and Shah, Maheshwari, P., Ren, H., Wang, Y., Sosic, R., and Leskovec,
+
+N. Graph condensation for graph neural networks. In J. Timegraphs: Graph-based temporal reasoning. arXiv
+International Conference on Learning Representations, preprint arXiv:2401.03134, 2024.
+2022. URL https://openreview.net/forum?
+id=WLEx3Jo4QaB. Meng, C., Mouli, S. C., Ribeiro, B., and Neville, J. Sub-
+
+graph pattern neural networks for high-order graph evolu-
+Kim, D. and Oh, A. How to find your friendly neighbor- tion prediction. In Proceedings of the AAAI Conference
+
+hood: Graph attention design with self-supervision. In on Artificial Intelligence, volume 32, 2018.
+International Conference on Learning Representations,
+2021. URL Mordaunt, D., Cox, D., and Fuller, M. Metabolomics
+
+https://openreview.net/forum?
+to improve the diagnostic efficiency of inborn errors of
+
+id=Wi5KUNlqWty.
+metabolism. International journal of molecular sciences,
+
+Kim, D., Jin, J., Ahn, J., and Oh, A. Models and bench- 21(4):1195, 2020.
+marks for representation learning of partially observed Newman, M. Networks. Oxford university press, 2018.
+subgraphs. In Proceedings of the 31st ACM International
+Conference on Information & Knowledge Management, Ni, J., Muhlstein, L., and McAuley, J. Modeling heart rate
+pp. 4118–4122, 2022. and activity data for personalized fitness recommenda-
+
+tion. In The World Wide Web Conference, pp. 1343–1353,
+Kipf, T. N. and Welling, M. Semi-supervised classifica- 2019.
+
+tion with graph convolutional networks. In International Ouyang, S., Bai, Q., Feng, H., and Hu, B. Bitcoin money
+Conference on Learning Representations, 2017. laundering detection via subgraph contrastive learning.
+
+Entropy, 26(3):211, 2024.
+Köhler, S., Carmody, L., Vasilevsky, N., Jacobsen, J. O. B.,
+
+Danis, D., Gourdine, J.-P., Gargano, M., Harris, N. L., Paszke, A., Gross, S., Massa, F., Lerer, A., Bradbury, J.,
+Matentzoglu, N., McMurry, J. A., et al. Expansion of the Chanan, G., Killeen, T., Lin, Z., Gimelshein, N., Antiga,
+human phenotype ontology (hpo) knowledge base and L., et al. Pytorch: An imperative style, high-performance
+resources. Nucleic acids research, 47(D1):D1018–D1027, deep learning library. In Advances in neural information
+2019. processing systems, pp. 8026–8037, 2019.
+
+Li, Q., Han, Z., and Wu, X.-M. Deeper insights into graph Pei, H., Wei, B., Chang, K. C.-C., Lei, Y., and Yang, B.
+convolutional networks for semi-supervised learning. In Geom-gcn: Geometric graph convolutional networks. In
+Proceedings of the AAAI conference on artificial intelli- International Conference on Learning Representations,
+gence, volume 32, 2018. 2020. URL https://openreview.net/forum?
+
+id=S1e2agrFvS.
+Li, S., Zheng, P., Pang, S., Wang, X. V., and Wang, L. Subramanian, A., Tamayo, P., Mootha, V. K., Mukherjee,
+
+Self-organising multiple human–robot collaboration: A S., Ebert, B. L., Gillette, M. A., Paulovich, A., Pomeroy,
+temporal subgraph reasoning-based method. Journal of S. L., Golub, T. R., Lander, E. S., et al. Gene set enrich-
+Manufacturing Systems, 68:304–312, 2023. ment analysis: a knowledge-based approach for interpret-
+
+ing genome-wide expression profiles. Proceedings of the
+Lim, D., Hohne, F., Li, X., Huang, S. L., Gupta, V., National Academy of Sciences, 102(43):15545–15550,
+
+Bhalerao, O., and Lim, S. N. Large scale learning on 2005.
+non-homophilous graphs: New benchmarks and strong
+simple methods. Advances in Neural Information Pro- Trümper, L., Ben-Nun, T., Schaad, P., Calotoiu, A., and
+cessing Systems, 34, 2021. Hoefler, T. Performance embeddings: A similarity-based
+
+transfer tuning approach to performance optimization.
+Loukas, A. Graph reduction with spectral and cut guarantees. In Proceedings of the 37th International Conference on
+
+Journal of Machine Learning Research, 20:1–42, 2019. Supercomputing, pp. 50–62, 2023.
+
+11
+
+
+
+Translating Subgraphs to Nodes Makes Simple GNNs Strong and Efficient for Subgraph Representation Learning
+
+Wang, X. and Zhang, M. GLASS: GNN with label-
+ing tricks for subgraph representation learning. In In-
+ternational Conference on Learning Representations,
+2022. URL https://openreview.net/forum?
+id=XLxhEjKNbXj.
+
+Xu, K., Hu, W., Leskovec, J., and Jegelka, S. How powerful
+are graph neural networks? In International Conference
+on Learning Representations, 2019. URL https://
+openreview.net/forum?id=ryGs6iA5Km.
+
+Ying, Z., You, J., Morris, C., Ren, X., Hamilton, W., and
+Leskovec, J. Hierarchical graph representation learning
+with differentiable pooling. Advances in neural informa-
+tion processing systems, 31, 2018.
+
+Zhang, M. and Li, P. Nested graph neural networks. Ad-
+vances in Neural Information Processing Systems, 34:
+15734–15747, 2021.
+
+Zhang, X., Xu, S., Lin, W., and Wang, S. Constrained social
+community recommendation. In Proceedings of the 29th
+ACM SIGKDD conference on knowledge discovery and
+data mining, pp. 5586–5596, 2023.
+
+Zhou, H., Liu, S., Lee, K., Shin, K., Shen, H., and Cheng,
+X. Dpgs: Degree-preserving graph summarization. In
+Proceedings of the 2021 SIAM International Conference
+on Data Mining (SDM), pp. 280–288. SIAM, 2021.
+
+Zhou, H., Liu, S., Koutra, D., Shen, H., and Cheng, X. A
+provable framework of learning graph embeddings via
+summarization. In Proceedings of the AAAI Conference
+on Artificial Intelligence, volume 37, pp. 4946–4953,
+2023.
+
+Zhu, J., Yan, Y., Zhao, L., Heimann, M., Akoglu, L., and
+Koutra, D. Beyond homophily in graph neural networks:
+Current limitations and effective designs. Advances in
+Neural Information Processing Systems, 33:7793–7804,
+2020.
+
+Zitnik, M., Sosic, R., and Leskovec, J. Biosnap datasets:
+Stanford biomedical network dataset collection. Note:
+http://snap. stanford. edu/biodata Cited by, 5(1), 2018.
+
+12
+
+
+
+Translating Subgraphs to Nodes Makes Simple GNNs Strong and Efficient for Subgraph Representation Learning
+
+A. Reproducibility Statements
+To reproduce the results, we open our code public via the GitHub link2. Datasets, including the downloadable link
+from Alsentzer et al. (2020), are described in Appendix E.
+
+B. Discussion on Related Work
+B.1. Detailed Comparison with State-of-the-Art Models: SubGNN and GLASS
+SubGNN (Alsentzer et al., 2020), GLASS (Wang & Zhang, 2022), and S2N improve different parts of the machine learning
+pipeline to solve subgraph-level tasks. SubGNN designs a whole model, GLASS augments input data through a labeling
+trick, and S2N uses a new data structure.
+SubGNN performs message-passing between subgraphs (or patches). Through this, the properties of internal and border
+structures for three channels (position, neighborhood, and structure) are learned independently. To learn a total of 6 (2 × 3)
+properties, SubGNN designs patch samplers, patch representation, and similarity (weights of messages) for each property
+in an ad hoc manner. For example, SubGNN patches nodes inside the subgraph using its representation as a message and
+distance-based similarity as weights to learn internal positions. By the complex model design, SubGNN requires a lot of
+computational resources for data pre-processing, model training, and inference.
+GLASS uses plain GNNs but labels input nodes as to whether they belong to the subgraph (the label of one) or not (the label
+of zero). Separate node-level message-passing is performed for each label to distinguish the internal and border structures of
+the subgraph. GLASS’s labeling trick is effective, but handling multiple labels from multiple subgraphs in a batch is hard.
+Although the authors of GLASS propose a max-zero-one trick to address this issue, small batches are still recommended. In
+addition, using a large global graph requires significant computational and memory resources.
+S2N uses the new data structure that stores and processes subgraphs efficiently. By compressing the global graph,
+computational and memory resource requirements are reduced. There are no restrictions on batch sizes; thus, we can train
+S2N graphs in the full batch. Our contribution lies in addressing the current research direction in subgraph representation
+learning, where enhancements in performance are often achieved by increasing model complexity. The S2N model challenges
+it by demonstrating better or comparable performance through a more efficient approach. This efficiency does not merely
+encompass computational resources. Still, it extends to ease of implementation and adaptability to diverse tasks, making it a
+significant advancement over current state-of-the-art methods.
+
+B.2. Detailed Comparison with Similar Architectures
+Circuit Graph Neural Network (CktGNN) (Dong et al., 2023) and Nested Graph Neural Network (NGNN) (Zhang &
+Li, 2021) are similar to our S2N+A in that they employ two-level GNNs, where the first GNN learns the embedding of
+subgraphs, and the second GNN performs message-passing between subgraphs. However, our study differs from these in the
+following aspects. First, they do not focus on subgraph-level tasks. CktGNN is applied for circuit design automation, and
+NGNN is applied for graph regression and classification. They do not demonstrate how the two-level GNNs approach affects
+subgraph representations rather than the whole graph. In contrast, we analyzed our S2N models empirically and theoretically
+on subgraph representation learning. Second, they also make strong assumptions about subgraphs and cannot be generalized
+to all subgraph-level tasks. Specifically, CktGNN uses a set of pre-designed subgraphs specialized for circuits. A subgraph
+in NGNN is the rooted subgraph of each node in the given graph. For these two models, the subgraph has to be in a fixed
+shape; thus, they cannot handle subgraphs of various structures and sizes.
+Junction Tree Variational Autoencoder (JT-VAE) (Jin et al., 2018) decomposes a molecular graph into a junction tree, where
+a node corresponds to the motif (particularly a ring of atoms), and edges link the nodes that share the nodes. This method is
+a graph generation model to learn the ring substructure well in chemical tasks but has not been used in subgraph-level tasks.
+Due to the nature of the Junction Tree algorithm, only the ring (or cycle) structure of input graphs is used as subgraphs,
+and the output is restricted to trees, which leads to limited usage. Our proposed S2N’s primary contribution is to explore
+the fundamental question of subgraph representation learning and propose a novel perspective. In addition, S2N can be
+generally applied to graphs and subgraphs of any structure.
+DiffPool (Ying et al., 2018) learns the hierarchy of a graph to obtain graph-level representations. DiffPool softly assigns
+
+2https://github.com/dongkwan-kim/S2N
+
+13
+
+
+
+Translating Subgraphs to Nodes Makes Simple GNNs Strong and Efficient for Subgraph Representation Learning
+
+each node to a cluster during training by optimizing the downstream task loss. To stabilize the soft clustering assignment, the
+authors of DiffPool employ link prediction loss and entropy regularization loss. The problem is that the assignment matrix
+must be maintained in GPU memory, which requires quadratic memory complexity regarding the number of nodes. In
+other words, we cannot apply DiffPool to large graphs such as global graphs in our use cases. We aim to perform subgraph
+representation learning efficiently by compressing data and reducing GPU load. Memory-intensive graph coarsening, such
+as DiffPool’s soft clustering assignment, should not be used to keep CoS2N efficient. Instead, we can secure the efficiency
+of CoS2N by performing graph coarsening before training the model, relying only on the structure of the global graph.
+
+C. Justification for the Choice of the Random Graph Model
+The configuration model (CM) only requires a degree sequence or a distribution. That means CM can also generate graphs
+generated by other random graph models. For example, when the degree distribution is Poisson distribution, CM generates
+graphs close to the Erdős–Rényi model. CM can also adopt other degree distributions, for example, power-law distributions.
+See Newman (2018) for more details.
+We also emphasize that the complexity of S2N strongly depends on the number of edges in S2N, that is, how many edges of
+small weights are removed during normalization. Thus, we need a random graph model that can analytically calculate the
+distribution of edge weights (i.e., the number of shared edges in two subgraphs). When using the CM, the distribution of
+S2N’s edge weights can be derived from the degree distribution of the global graph. This is possible because CM calculates
+the probability of edge existence through the degrees of a pair of nodes. Note that CM is frequently used in analytically
+calculating numerous network measures (Barabási, 2013).
+
+D. Proofs of Theoretical Analysis
+This section describes proofs of theoretical claims in the paper: Propositions 4.1, 4.2, and 4.3. In addition, we analyze
+the error bound between S2N and the global graph for a variant of Graph Isomorphism Networks (Xu et al., 2019) in
+Proposition D.5 and Corollary D.6.
+
+Proposition D.1 (Proposition 4.1). The time complexity of the 1-layer GLASS, Connected form, S2N+0, and S2N+A is
+GLASS & Connected: O(EF +MN subF +NF 2), (13)
+
+S2N+0: O(ÊF +MN subF +MF 2), (14)
+S2N+A: O(ÊF +MEsubF +MN subF 2). (15)
+
+Proof. Let G = (V,A,X) be a global graph where V is a set of nodes (|V| = N ), A ∈ {0, 1}N×N is an adjacency matrix,
+and X ∈ RN×F0 is a node feature matrix. A subgraph S = (Vsub,Asub) is a graph formed by subsets of nodes and edges
+in the global graph G. For the subgraph classification task, there is a set of M subgraphs S = {S1,S2, ...,SM}, and for
+Si = (Vsub
+
+i ,Asub
+i ), the goal is to learn subgraph representations Ĥ ∈ RM×F .
+
+Baselines and S2N models are computed by following steps:
+
+• GLASS & Connected: Ĥ = R⊤GNN(X,A)∑where R ∈ RN×M is a readout matrix.
+
+• S2N+0: Ĥ = GNNS2N(X̂, Â) where X̂[i] = ∑v∈Vsub ωvi ·X[v,:].
+i
+
+• S2N+A: Ĥ = GNNS2N(X̂, Â) where X̂[i] = v∈Vsub ωvi · GNNnode(X[Vsub :],A
+sub
+
+i i , i )[v,:].
+
+Graph neural networks (GNNs) that use the message-passing mechanism to learn subgraph representations can be de-
+composed into feature transformation (FT), feature propagation (FP), and subgraph-level readout (SR). Feature transfor-
+mation requires O(the number of nodes × F 2) computations and feature propagation by sparse implementation requires
+O(the number of edges × F ) computations. Plus, for the readout of representations or input features, we need the computa-
+tions of O(the total number of nodes in subgraphs × F ).
+
+• GLASS & Connected: O(EF ) from FP, O(MN subF ) from SR, and O(NF 2) from FT.
+
+• GLASS: O(MN sub) from the node labeling trick (Wang & Zhang, 2022).
+
+14
+
+
+
+Translating Subgraphs to Nodes Makes Simple GNNs Strong and Efficient for Subgraph Representation Learning
+
+• S2N+0: O(ÊF ) from FP, O(MN subF ) from SR, and O(MF 2) from FT.
+
+• S2N+A: O(ÊF ) and O(MEsubF ) from FP in GNNS2N and GNNnode, O(MN subF ) from SR, and O(MF 2) and
+O(MN subF 2) from FT in GNNS2N and GNNnode.
+
+By adding up all the terms, we can get the final result.
+
+Proposition D.2 (Proposition 4.2). For Configuration Model as G and i.i.d. sampled subgraphs where the average size is
+sub 2
+
+N sub, the probability that the weight Â[i,j] of an edge (i, j) in Ĝ is bigger than c > 0 is P (Â[i,j] ≥ c) ≤ (N ) E[d]
+cN where
+
+E[d] is an average degree of G.
+
+∑
+Proof. We first note that the probability of edge (u, v) in the Configuration Model for large E is dudv
+
+2E and E = 1
+2 k dk =
+
+1
+2NE[d] (Newman, 2018).
+
+E[Â
+P (Â[i,j] ≥ c) ≤ ∑[i,j]] ∑(∵ Markov’s inequality) (16)
+
+c
+E[ u∈Vsub v∈Vsub A[u,v]]
+
+= ∑ i ∑ j (17)
+c
+
+E[ dudv
+u∈Vsub v∈Vsub ]
+
+= i ∑ j
+
+c ∑2E (18)
+
+E(i,j)∈S×S[ u∈Vsub ub E[d]2]
+i v∈Vs
+
+= j (19)
+2cE
+
+(N subE[d])2
+= (20)
+
+2cE
+(N sub)2E[d]
+
+= (21)
+cN
+
+To prove Proposition 4.3, we first introduce Lemma D.3.
+Lemma D.3.
+
+1 1
+R⊤D− 2AD− 1
+
+2R = D̂− 1
+2 ÂD̂− 2 (22)
+
+Proof.
+
+1 1 1 1
+R⊤D− 2AD− 1 1
+
+2R = (D 2MD̂− 1
+2 )⊤D− 2AD− 2D 2MD̂− 1
+
+2 (23)
+1 1 1 1 1
+
+= D̂− 2M⊤D 2D− 1
+2AD− 2D 2MD̂− 2 (24)
+
+= D̂− 1
+2M⊤AMD̂− 1
+
+2 (25)
+1
+
+= D̂− 2 ÂD̂− 1
+2 . (26)
+
+Proposition D.4 (Proposition 4.3). Using the single-layer GCN parametrized by W , subgraph representations R⊤H of
+the global graph G can be approximated by node representations Ĥ of the S2N graph Ĝ, that is, Ĥ ≈ R⊤H . The error
+between two representations is bounded by:
+
+∥R⊤H − Ĥ∥ ≤ 1
+M 2 ∥X −RX̂∥ · ∥W ∥. (27)
+
+15
+
+
+
+Translating Subgraphs to Nodes Makes Simple GNNs Strong and Efficient for Subgraph Representation Learning
+
+Proof.
+
+∥R⊤H − Ĥ∥ = ∥R⊤D− 1
+2AD− 1
+
+2XW − D̂− 1
+2 ÂD̂− 1
+
+2 X̂W ∥ (28)
+= ∥R⊤D− 1
+
+2AD− 1
+2XW −R⊤D− 1
+
+2AD− 1
+2RX̂W ∥ (∵ Lemma D.3) (29)
+
+= ∥R⊤(D− 1
+2AD− 1
+
+2 )(X −RX̂)W ∥ (30)
+≤ ∥R⊤∥∥D− 1
+
+2AD− 1
+2 ∥∥X −RX̂∥∥W ∥ (31)
+
+≤ 1
+M 2 ∥X −RX̂∥ · ∥W ∥. (32)
+
+Although Proposition 4.3 is analyzed using GCN models only, it is not limited to GCN in its applicability. Intuitively, when
+sufficient subgraph samples are unavailable, message-passing in any GNNs fails in the global graph not covered by existing
+subgraphs. Moreover, we can obtain theoretical results similar to Proposition 4.3 for other GNNs. However, we might not
+get the approximation bound analytically depending on GNN architectures. For Graph Isomorphism Network (GIN) (Xu
+et al., 2019) as an example, the non-linearity in multi-layer perceptron (MLP) makes it hard to analytically compare the GIN
+outputs of S2N and the original graph. Instead, we introduce an approximation error bound on ‘GIN Sum-1-Layer’, a less
+powerful variant of GINs that replaces MLP with single-layer perceptron (SLP).
+
+GIN: H = MLP ((A+ (1 + ϵ) · I) ·X) , (33)
+GIN Sum-1-Layer: H = SLP ((A+ (1 + ϵ) · I) ·X) . (34)
+
+The error bound between S2N’s node representations and the global graph’s subgraph representations is demonstrated in
+Proposition D.5. Here, we use the sum-readout READOUT(H) = M⊤H to get subgraph representations.
+Proposition D.5. Using the single-layer GIN Sum-1-Layer parametrized by W , subgraph representations M⊤H of the
+global graph G can be approximated by node representations Ĥ of the S2N graph Ĝ, that is, Ĥ ≈ M⊤H . The error
+between two representations is bounde(d by: )
+
+∥M⊤H − Ĥ∥ ≤ (MN sub 1
+E) 2 ∥X −MX̂∥+ (1 + ϵ)∥M⊤X − X̂∥ · ∥W ∥. (35)
+
+Proof.
+
+∥M⊤H − Ĥ∥ = ∥M⊤(A+ (1 + ϵ)IN )XW − (Â+ (1 + ϵ)IM )X̂W ∥ (36)
+= ∥M⊤(A+ (1 + ϵ)IN )XW − (M⊤AM + (1 + ϵ)IM )X̂W ∥ (37)
+= ∥M⊤A(X −MX̂)XW + (1 + ϵ)(M⊤X − X̂)W ∥ (38)
+≤ (∥M⊤∥∥A∥∥X −MX̂∥∥W ∥+ (1 + ϵ)∥M⊤X − X̂)∥∥W ∥ (39)
+
+≤ (MN sub 1
+E) 2 ∥X −MX̂∥+ (1 + ϵ)∥M⊤X − X̂∥ · ∥W ∥, (40)
+
+where IN is an identity matrix of size N .
+
+If we set the initial features of S2N as a sum of the original features (i.e., X̂ = M⊤X), Corollary D.6 then follows from
+Proposition D.5.
+Corollary D.6. Using the single-layer GIN Sum-1-Layer parametrized by W , subgraph representations M⊤H of the
+global graph G can be approximated by node representations Ĥ of the S2N graph Ĝ, that is, Ĥ ≈ M⊤H . If the initial
+feature matrix of S2N is X̂ = M⊤X , the error between two representations is bounded by:
+
+∥M⊤H − Ĥ∥ ≤ (MN sub 1
+E) 2 ∥X −MX̂∥ · ∥W ∥. (41)
+
+16
+
+
+
+Translating Subgraphs to Nodes Makes Simple GNNs Strong and Efficient for Subgraph Representation Learning
+
+Table 4: Statistics of real-world datasets in original forms (before S2N translation).
+
+PPI-BP HPO-Neuro HPO-Metab EM-User
+# nodes in G 17,080 14,587 14,587 57,333
+# edges in G 316,951 3,238,174 3,238,174 4,573,417
+# internal edges in subgraphs 9,627 217,555 390,450 86,648
+# subgraphs 1,591 4,000 2,400 324
+Density of G 0.0022 0.0304 0.0304 0.0028
+Average density of subgraphs 0.216±0.188 0.767±0.141 0.757±0.149 0.010±0.006
+
+Average # nodes / subgraph 10.2±10.5 14.8±6.5 14.4±6.2 155.4±100.2
+Average # components / subgraph 7.0±5.5 1.5±0.7 1.6±0.7 52.1±15.3
+
+# classes 6 10 6 2
+Single- or multi-label Single-label Multi-label Single-label Single-label
+Train/Valid/Test splits 80/10/10 80/10/10 80/10/10 70/15/15
+
+E. Datasets
+All real-world subgraph datasets (PPI-BP, HPO-Neuro, HPO-Metab, and EM-User) and synthetic subgraph datasets (Density,
+Cut-Ratio, Coreness, and Component) are proposed in Alsentzer et al. (2020). They can be downloaded from the author’s
+GitHub repository3. Pre-trained embeddings can be downloaded from the GitHub repository4 of Wang & Zhang (2022).
+The following paragraphs describe their nodes, edges, subgraphs, tasks, and references. Note that the number of edges in
+the real-world datasets compared to datasets referred to as large-scale (Lim et al., 2021) is at a similar level; thus, similar
+scalability is required to model real-world graphs using GNNs.
+
+E.1. Real-World Datasets
+PPI-BP The global graph of PPI-BP (Zitnik et al., 2018; Subramanian et al., 2005; Consortium, 2019; Ashburner et al.,
+2000) is a human protein-protein interaction (PPI) network; nodes are proteins, and edges are whether there is a physical
+interaction between proteins. Subgraphs are sets of proteins in the same biological process (e.g., alcohol bio-synthetic
+process). The task is to classify processes into six categories.
+
+HPO-Neuro and HPO-Metab These two HPO (Human Phenotype Ontology) datasets (Hartley et al., 2020; Köhler et al.,
+2019; Mordaunt et al., 2020) are knowledge graphs of phenotypes (i.e., symptoms) of rare neurological and metabolic
+diseases. Each subgraph is a collection of symptoms associated with a monogenic disorder. The task is to diagnose the rare
+disease: classifying the disease type among subcategories (ten for HPO-Neuro and six for HPO-Metab).
+
+EM-User EM-User (Users in EndoMondo) dataset is a social fitness network from Endomondo (Ni et al., 2019). Here,
+subgraphs are users, nodes are workouts, and edges exist between workouts completed by multiple users. Each subgraph
+represents the workout history of a user. The task is to profile a user’s gender.
+
+E.2. Synthetic Datasets
+Density, Cut-Ratio, Coreness, and Component For these synthetic datasets, the task is to predict the properties of
+subgraphs: density, cut ratio, average core number, and the number of components, respectively. Refer to Alsentzer
+et al. (2020) for details on how to generate the synthetic graphs. We use a vector of 64 dimensions initialized to 1 or its
+L1-normalized vector as input node embedding.
+
+F. Models
+We describe the hyperparameter details and the tuning method. All models are implemented with PyTorch (Paszke et al.,
+2019), PyTorch Geometric (Fey & Lenssen, 2019), and PyTorch Lightning (Falcon & The PyTorch Lightning team, 2019).
+
+3https://github.com/mims-harvard/SubGNN
+4https://github.com/Xi-yuanWang/GLASS
+
+17
+
+
+
+Translating Subgraphs to Nodes Makes Simple GNNs Strong and Efficient for Subgraph Representation Learning
+
+Table 5: Statistics of synthetic datasets in original forms (before S2N translation).
+
+Density Cut-Ratio Coreness Component
+# nodes in G 5,000 5,000 5,000 19,555
+# edges in G 29,521 83,969 118,785 43,701
+# subgraphs 250 250 221 250
+Density of G 0.0024 0.0067 0.0095 0.0002
+Average density of subgraphs 0.232±0.146 0.945±0.028 0.219±0.062 0.150±0.161
+
+Average # nodes / subgraph 20.0±0.0 20.0±0.0 20.0±0.0 74.2±52.8
+Average # components / subgraph 3.8±3.7 1.0±0.0 1.0±0.0 4.9±3.5
+
+# classes 3 3 3 2
+Single- or multi-label Single-label Single-label Single-label Single-label
+Train/Valid/Test splits 80/10/10 80/10/10 80/10/10 80/10/10
+
+Table 6: The attributes that affect the subgraph properties (labels) of synthetic datasets, introduced in Alsentzer et al. (2020).
+
+Density Cut-Ratio Coreness Component
+Internal structure Border structure Internal structure, border structure & position Internal & external position
+
+We tune hyperparameters using TPE (Tree-structured Parzen Estimator) algorithm in Optuna (Akiba et al., 2019) by 400
+trials: learning rate (5×10−4 – 10−2), weight decay (10−9 – 10−6), the number of layers in GNN (1 – 2), dropout of channels
+and edges ({0.0, 0.1, ..., 0.5}), gradient clipping ({0.0, 0.1, ..., 0.5}), the readout matrix (ωvi = R[v,i] in Equation 11 or
+ωvi = M[v,i]), and whether to use batch normalization (Ioffe & Szegedy, 2015) and skip-connection (He et al., 2016).
+Hyperparameters specialized on GCNII are also tuned: α ({0.1, 0.2, ..., 0.9}), θ ({0.1, 0.2, ..., 2.0}), weight sharing (True
+or False). For S2N translation, we tune edge normalization range (a and b = a+∆ in Equation 3, a ∈ {1.0, 1.25, ..., 4.0},
+∆ ∈ {0.5, 1.0, 1.5, 2.0}). We add frozen Random Walk Positional Encoding (RWPE) (Dwivedi et al., 2022) to input features
+for real-world datasets. For synthetic datasets, we allocate RWPE to 1/2 or 1/4 of the total embedding dimension.
+All hyperparameters are reported in the code.
+
+G. Efficiency Measurement
+We compute throughput (subgraphs per second) and latency (seconds per forward pass) using the following equations. In
+addition, we use torch.cuda.max memory allocated to measure the maximum allocated GPU VRAM5.
+
+# of training subgraphs
+Training throughput = , (42)
+
+training wall-clock time (seconds) / # of epochs
+# of validation subgraphs
+
+Evaluation throughput = , (43)
+validation wall-clock time (seconds) / # of epochs
+training wall-clock time (seconds)
+
+Training latency = , (44)
+# of training batches
+
+validation wall-clock time (seconds)
+Evaluation latency = . (45)
+
+# of validation batches
+
+While throughput is a primary metric in practice, focusing solely on this metric is suboptimal for best model selection.
+Specifically, we observed that connected forms suffer from extensive memory consumption, and separated forms exhibit
+significant performance degradation compared to our proposed S2N models. The holistic evaluation of performance,
+throughput, and memory requirements is crucial for practitioners to decide which models to employ based on their specific
+constraints and requirements, as stated in Dehghani et al. (2022).
+
+5https://pytorch.org/docs/1.9.0/generated/torch.cuda.max memory allocated.html
+
+18
+
+
+
+Translating Subgraphs to Nodes Makes Simple GNNs Strong and Efficient for Subgraph Representation Learning
+
+Table 7: Mean performance in micro F1-score over 10 runs. We mark with daggers the reprinted results from Alsentzer et al.
+(2020) (†) and Wang & Zhang (2022) (‡).
+
+Model Data Structure PPI-BP EM-User
+Sub2Vec Best† 30.9±2.3 85.9±1.4
+
+SubGNN† 59.9±2.4 81.4±4.6
+
+GLASS‡ 61.9±0.7 88.8±0.6
+
+GCNII Separated 61.3±1.2 84.7±4.1
+GCNII Connected 63.5±2.0 85.5±4.8
+GCNII S2N+0 63.5±2.4 86.5±3.2
+GCNII S2N+A 63.7±2.3 89.0±1.6
+
+GIN Separated 60.6±2.1 82.2±6.6
+GIN Connected 61.0±3.3 83.7±4.8
+GIN S2N+0 63.3±1.6 84.9±5.3
+GIN S2N+A 62.2±1.9 83.1±1.6
+
+GATv2 Separated 61.4±2.6 84.7±4.9
+GATv2 Connected 61.0±1.5 OOM
+GATv2 S2N+0 62.8±1.7 84.9±2.4
+GATv2 S2N+A 62.6±1.4 86.7±3.2
+
+H. Discussion on the Number of Nodes and Edges in S2N
+The number of nodes in S2N+A in Table 1 only includes nodes translated from subgraphs. The total number of nodes in
+S2N+A may be larger than the original global graph if we count all internal nodes in the subgraph. However, this is not
+significantly related to actual efficiency. The reason is that in S2N+A, internal nodes in the subgraph are kept sparse (i.e.,
+indexing) rather than dense embedding by implementation, so memory cost is low. Specifically, node indexing requires the
+space complexity of O(N), and dense embedding requires O(NF ), where N is the number of nodes and F is the number
+of features. The dominant factors of computational and memory bottlenecks are the number of subgraphs (the number of
+nodes in S2N), which determines the size of the final representation, and the number of edges, which determines the number
+of message-passing, as illustrated in Table 1.
+
+I. Generalization of Homophily to Multi-label Classification
+Node (Pei et al., 2020) and edge homophily (Zhu et al., 2020) are defined by,
+
+hedge |{(u, v)|(u, v) ∈ A ∧ yu = yv}| ∑ , v)|u ∈ N (v) ∧ yu = yv}|
+, hnode 1 |{(u
+
+= = , (46)
+|A| |V| |N (v)|
+
+v∈V
+
+where yv is the label of the node v. In the main paper, we define multi-label node and edge homophily by,
+
+hedge, ml 1 ∑ |Lu ∩ L ∑ 
+v|
+, hnode, ml 1 1 ∑ |Lu ∩ Lv|
+
+= =  . (47)
+|A| |Lu ∪ Lv| |V| |N (v)| |Lu ∪ Lv|
+
+(u,v)∈A v∈V u∈N (v)
+
+If we compute r = |Lu∩Lv|
+|Lu∪Lv| for single-label multi-class graphs, r = 1
+
+1 = 1 for nodes of same classes, and r = 0
+2 = 0 for
+
+nodes of different classes. That makes hedge, ml = hedge and hnode, ml = hnode for single-label graphs.
+
+J. Performance of Different GNN Layers
+In Table 7, we demonstrate the performance of S2N models using additional GNN layers: Graph Isomorphism Networks
+(GIN) (Xu et al., 2019) and Graph Attention Networks v2 (GATv2) (Brody et al., 2022) on PPI-BP and EM-User.
+GIN and GATv2 (S2N+0 and S2N+A) outperform GLASS on PPI-BP but perform worse than on EM-User. We confirm
+that S2N outperforms classic data structures: separated and connected forms. For GATv2, we cannot experiment with the
+
+19
+
+
+
+Translating Subgraphs to Nodes Makes Simple GNNs Strong and Efficient for Subgraph Representation Learning
+
+Table 8: Mean performance in micro F1-score over 10 runs using GCNII models with different readout methods.
+
+Data Structure Readout PPI-BP HPO-Neuro HPO-Metab EM-User
+Sum 63.5±2.4 66.4±1.1 61.6±1.7 86.5±3.2
+
+S2N+0 Mean 59.9±2.0 63.9±0.5 62.0±1.0 85.3±3.9
+Max 48.6±2.8 54.1±1.0 51.8±2.2 72.2±7.1
+Degree 60.3±2.2 65.6±1.0 58.8±2.3 83.1±2.9
+
+Sum 63.7±2.3 68.4±1.0 63.2±2.7 88.8±2.1
+
+S2N+A Mean 59.6±1.5 66.6±1.0 60.8±1.1 88.0±3.2
+Max 58.5±1.7 59.6±2.0 59.4±2.7 81.2±3.1
+Degree 63.1±2.2 68.4±0.9 61.0±2.0 89.0±1.6
+
+Table 9: Mean performance in micro F1-score over 10 runs using GCNII models with different numbers of layers of GNNS2N.
+
+Data Structure # layers PPI-BP HPO-Neuro HPO-Metab EM-User
+0 57.7±1.6 65.2±1.6 55.5±1.9 77.6±9.4
+
+S2N+0 1 61.1±2.4 66.4±1.1 61.6±1.7 79.2±9.2
+2 63.5±2.4 65.6±1.4 59.4±1.0 86.5±3.2
+4 62.8±2.0 65.8±0.8 61.1±1.7 79.2±7.9
+
+0 59.7±2.2 68.2±0.8 61.8±1.7 87.1±3.5
+
+S2N+A 1 63.7±2.3 68.4±1.0 61.9±2.0 89.0±1.6
+2 61.8±1.4 68.0±0.8 63.2±2.7 86.3±4.9
+4 61.6±1.7 67.7±0.8 62.0±1.6 86.3±5.2
+
+connected form on EM-User due to the requirements of large GPU memory. Nonetheless, all S2N models with GIN and
+GATv2 outperform SubGNN on all datasets.
+Compared to GCNII, which showed the best performance in our paper, GIN and GATv2 generally perform worse. This
+implies that architectures designed for node or link-level tasks are sub-optimal for subgraph-level tasks. We suggest further
+studies on model architectures for learning subgraph representations.
+
+K. Ablation Study of Hyperparameters
+We conduct ablation studies on the readout method (Equation 10) (sum, mean, max, and degree-dependent), the number
+of layers in GNNS2N (0, 1, 2, 4), and the positional encoding (Dwivedi et al., 2022). We report the performance of S2N+0
+and S2N+A with GCNII by the readout method in Table 8, the number of layers in Table 9, and the positional encoding in
+Table 10.
+
+Readout Generally, the sum-readout performs best, and the max-readout performs the worst, as illustrated in Table 8.
+The performance of mean-readout and degree-dependent readout varies by dataset. In S2N+A, degree-dependent readout
+performs similarly to sum-readout and slightly outperforms on EM-User.
+
+The Number of Layers In Table 9, we find that using message-passing (i.e., the number of layers > 0) always increases
+the performance on all datasets. That is, modeling the S2N graph structures helps to learn the representation of subgraphs.
+The performance improvement by GNNS2N in S2N+0 is higher than in S2N+A, which leverages internal structures. The
+performance decreases when we use a deeper GNNS2N than the optimum; that is, an over-smoothing effect exists in
+GNNS2N (Li et al., 2018).
+
+Positional Encoding In Table 10, we report the performance of GCNII models with Random Walk Positional Encoding
+(RWPE) and Laplacian Positional Encoding (LapPE) (Dwivedi et al., 2022). We find that LapPE also contributes to
+performance improvement in general, and there is no significant difference between RWPE and LapPE.
+
+20
+
+
+
+Translating Subgraphs to Nodes Makes Simple GNNs Strong and Efficient for Subgraph Representation Learning
+
+Table 10: Mean performance in micro F1-score over 10 runs using GCNII models with different positional encoding.
+
+Data Structure Positional Encoding PPI-BP HPO-Neuro HPO-Metab EM-User
+None 63.5±2.4 66.4±1.1 61.6±1.7 86.5±3.2
+
+S2N+0 RWPE 63.5±1.7 66.7±0.6 62.3±1.1 86.5±4.7
+LapPE 63.9±2.4 66.1±0.8 61.9±1.7 87.3±2.5
+
+None 63.7±2.3 68.4±1.0 63.2±2.7 89.0±1.6
+S2N+A RWPE 64.3±1.8 68.6±0.8 63.9±1.7 89.0±3.1
+
+LapPE 64.2±1.9 68.8±0.9 63.7±1.4 89.0±3.2
+
+0.9 104 104 104
+
+0.8 Data structure
+S2N+0
+
+0.7 103 103 S2N+A
+103 CoS2N+0
+
+CoS2N+A
+0.6 Connected
+
+Separated
+
+0.5 102 102
+102
+
+10 20 40 80 10 20 40 80 10 20 40 80 10 20 40 80
+# training samples / class # training samples / class # training samples / class # training samples / class
+
+(a) Performance (b) Training Throughput (c) Eval Throughput (d) Max allocated VRAM
+
+Figure 5: Performance and efficiency on EM-User of S2N, CoS2N, connected, and separated forms by the number of training
+samples in a data-scarce setting.
+
+L. Performance and Efficiency of Coarsened S2N in a Data-Scarce Setting
+For experiments in a data-scare setting, we narrow the search space of hyperparameters. Specifically, we fix to use batch
+normalization but not skip-connections. We use a coarsening ratio that creates virtual subgraphs smaller than the average
+size: [0.2, 0.3, 0.4, 0.5] for PPI-BP and [0.7, 0.8, 0.9] for EM-User. After graph coarsening, we remove subgraphs that consist
+of a single node. We follow the same tuning procedures in Appendix F for the remaining details.
+As stated in §6.4, we summarize performance and efficiency on EM-User in Figure 5. Overall, results on EM-User do not
+show a notable difference from trends in data-scarce experiments on PPI-BP at §6.4. We can observe that (1) subgraphs
+created by coarsening contribute to performance improvements of S2N, and (2) CoS2N has higher throughput and uses less
+memory than using the global graph.
+We report the performance on PPI-BP and EM-User by the coarsening ratio in Figure 6. Although there is no consistently
+optimal coarsening ratio by the number of training samples, we can conclude that finding the optimal coarsening ratio for
+each dataset can increase the performance.
+
+21
+
+Performance
+
+Train Throughput (#/s)
+
+Eval Throughput (#/s)
+
+Max Allocated VRAM (MB)
+
+
+
+Translating Subgraphs to Nodes Makes Simple GNNs Strong and Efficient for Subgraph Representation Learning
+
+# samples / class = [10] # samples / class = [20] # samples / class = [30] # samples / class = [40] # samples / class = [80]
+0.5
+
+Data structure
+0.4 CoS2N+0
+
+CoS2N+A
+
+0.2 0.3 0.4 0.5 0.2 0.3 0.4 0.5 0.2 0.3 0.4 0.5 0.2 0.3 0.4 0.5 0.2 0.3 0.4 0.5
+Coarsening ratio Coarsening ratio Coarsening ratio Coarsening ratio Coarsening ratio
+
+(a) Performance on PPI-BP by coarsening ratio.
+
+# samples / class = [10] # samples / class = [20] # samples / class = [30] # samples / class = [40] # samples / class = [80]
+
+0.8 Data structure
+CoS2N+0
+CoS2N+A
+
+0.7
+
+0.7 0.8 0.9 0.7 0.8 0.9 0.7 0.8 0.9 0.7 0.8 0.9 0.7 0.8 0.9
+Coarsening ratio Coarsening ratio Coarsening ratio Coarsening ratio Coarsening ratio
+
+(b) Performance on EM-User by coarsening ratio.
+
+Figure 6: Performance of CoS2N on PPI-BP and EM-User by coarsening ratio.
+
+22
+
+Performance Performance

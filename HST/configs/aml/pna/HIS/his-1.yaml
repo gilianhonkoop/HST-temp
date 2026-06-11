@@ -1,0 +1,96 @@
+dataset:
+  data_path: "/home/ghonkoop/data"
+  dataset_name: "HI-Small"
+  dataset_type: "aml"
+  embedding_type: None
+  train_ratio: 0.6
+  val_ratio: 0.2
+  split_mode: "class_temporal"
+  illicit_label: 0
+
+aggregators:
+  hidden_dim: 64
+  node_pooling_mode: "pna"
+  edge_pooling_mode: "attention-stats"
+  pna:
+    num_layers: 3
+    aggregators: [mean, min, max, std]
+    scalers: [identity, amplification, attenuation]
+    towers: 1
+    pre_layers: 1
+    post_layers: 1
+    norm: batch
+
+supergraph_normalization:
+  enabled: True
+  x: True
+  edge_attr: True
+  clip: 10.0
+  eps: 1.0e-6
+
+model:
+  hidden_dim: 160
+  backbone: "pna"
+  dropout: 0.25
+  pearl:
+    num_phi_layers: 4
+    num_samples: 32
+    sample_pool: "mean"
+    random_std: 1.0
+  fraudgt:
+    heads: 4
+  pna:
+    num_layers: 3
+    aggregators: [mean, min, max, std]
+    scalers: [identity, amplification, attenuation]
+    towers: 2
+    pre_layers: 1
+    post_layers: 1
+    norm: batch
+
+train:
+  device: "cuda"
+  num_workers: 11
+  num_threads: 1
+  persistent_workers: True
+  pin_memory: True
+  disjoint: True
+  seed: 42
+  use_amp: True
+  mini_batch: True
+  batch_size: 512
+  neighbor_sizes: [50, 50]
+  training_threshold: 0.5
+  summarize_once_per_epoch: False
+  iter_per_epoch: 128
+  eval_period: 1
+  pos_weight: 0.40
+
+threshold_search:
+  enabled: True
+  metric: val/illicit_f1
+  n_trials: 50
+  lower: 0.10
+  upper: 0.90
+
+optim:
+  optimizer: adamW
+  weight_decay: 0.0001
+  base_lr: 0.0007
+  aggregator_lr: 1.0e-5
+  max_epoch: 220
+  min_epoch: 120
+  patience: 40
+  clip_grad_norm: True
+  max_grad_norm: 1.0
+
+logging:
+  log_interval: 5
+  use_wandb: True
+  wandb_project: "HST-PNA"
+  use_checkpoints: True
+  ckpt_period: 20
+  save_dir: "/scratch-shared/ghonkoop/checkpoints/aml/hi-small"
+  run_name: "HIS-1"
+  monitor_metric: "val/illicit_pr_auc"
+  monitor_mode: "max"

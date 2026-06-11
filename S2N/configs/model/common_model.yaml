@@ -1,0 +1,21 @@
+activation: relu
+hidden_channels: 64
+use_lr_scheduler: True
+use_s2n_jk: sum
+layer_kwargs:
+  edge_attr_mode: auto  # auto, weight, features, full, none
+
+is_multi_labels: ${datamodule._is_multi_labels}
+use_s2n: ${datamodule.use_s2n}
+sub_node_encoder_layer_kwargs:
+  heads: 8
+  eps: null
+  alpha: null
+  theta: null
+  shared_weights: null
+
+metrics: [ "micro_f1", "macro_f1" ]
+hp_metric: "micro_f1"
+
+# To Trainer
+_gradient_clip_val: 0.0

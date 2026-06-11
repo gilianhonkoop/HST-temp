@@ -1,0 +1,33 @@
+# @package _global_
+
+defaults:
+  - tpe.yaml
+
+objective: "valid/illicit_pr_auc"
+
+threshold_search:
+  enabled: True
+  metric: illicit_f1
+  n_trials: 30
+  lower: 0.05
+  upper: 0.95
+
+hydra:
+  sweeper:
+    direction: maximize
+    # storage: sqlite:///optuna_sweep.db
+    storage: null
+    n_trials: 25
+    n_jobs: 1
+    params:
+      model.hidden_channels: "choice(256)"
+      model.learning_rate: "tag(log, float(0.0001, 0.005))"
+      model.dropout_channels: "float(0.0, 0.5)"
+      model.dropout_edges: "float(0.0, 0.5)"
+      model.weight_decay: "tag(log, float(1e-6, 1e-3))"
+      model.num_layers: "int(1, 2)"
+      # model.layer_kwargs.alpha: "float(0.1, 0.9)"
+      # model.layer_kwargs.theta: "float(0.1, 2.0)"
+      model.loss_weight_0: "int(5, 30)"
+      # datamodule.batch_size: "choice(128, 256, 512, 1024)"
+      datamodule.batch_size: "choice(512, 1024)"

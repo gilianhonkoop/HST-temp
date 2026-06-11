@@ -1,0 +1,13 @@
+# https://pytorch-lightning.readthedocs.io/en/latest/extensions/generated/pytorch_lightning.loggers.WandbLogger.html
+_target_: pytorch_lightning.loggers.wandb.WandbLogger
+save_dir: ${work_dir}/../logs_wandb/
+name: "default_run"
+project: "S2N"
+entity: "my_entity"  # Default entity
+log_model: False
+prefix: ""
+job_type: "train"
+group: ""
+tags:
+  - ${model.subname}
+  - ${datamodule.dataset_subname}

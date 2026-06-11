@@ -1,0 +1,14 @@
+aggr: mean
+batch_size: 512
+conv_layer: 2
+dropout: 0.25
+hidden_dim: 512
+lr: 0.00075
+pool: sum
+resi: 0.2
+z_ratio: 0.8
+pos_weight: [20.0, 1.0]
+threshold_search: true
+train_eval_threshold: 0.5
+model_selection_metric: val/minor_pr_auc
+threshold_selection_metric: val/minor_f1

@@ -1,0 +1,82 @@
+======================================================
+  PNA Training
+======================================================
+  Job ID       : 23590058
+  Config       : configs/aml/LIS-4.yaml
+  Resume       : 0
+  Python       : python3.11
+  Started at   : Mon Jun  8 09:44:13 PM CEST 2026
+======================================================
+2026-06-08 21:44:24,924 - INFO - Using device: cuda
+2026-06-08 21:44:24,927 - INFO - Loading cached PNA dataset from /home/ghonkoop/data/aml/LI-Small/pna_cache/node_features-raw_add_degree_feature-True_use_edge_features-True_edge_feature_normalize-zscore_edge_feature_clip-10.0_add_reverse_edges-False_train_ratio-0.6_val_ratio-0.2_split_mode-class_temporal_illicit_label-0_max_degree_hist-1000.pt
+2026-06-08 21:44:33,168 - INFO - Loaded cached PNA dataset in 8.2s
+2026-06-08 21:44:33,428 - INFO - Trainable parameters: 1367553
+2026-06-08 21:44:33,977 - INFO - Using BCEWithLogitsLoss pos_weight=23.616394
+2026-06-08 21:44:38,680 - INFO - Epoch 1/150 | train_loss=1.2544 val_loss=0.6394 val_illicit_f1=0.3369 val_illicit_pr_auc=0.3401 monitor(val/illicit_pr_auc)=0.3401
+2026-06-08 21:44:41,115 - INFO - Epoch 2/150 | train_loss=1.3492 val_loss=0.6644 val_illicit_f1=0.3480 val_illicit_pr_auc=0.3345 monitor(val/illicit_pr_auc)=0.3345
+2026-06-08 21:44:43,547 - INFO - Epoch 3/150 | train_loss=0.7792 val_loss=0.6034 val_illicit_f1=0.2496 val_illicit_pr_auc=0.3583 monitor(val/illicit_pr_auc)=0.3583
+2026-06-08 21:44:45,959 - INFO - Epoch 4/150 | train_loss=0.6779 val_loss=1.4487 val_illicit_f1=0.2489 val_illicit_pr_auc=0.2426 monitor(val/illicit_pr_auc)=0.2426
+2026-06-08 21:44:48,352 - INFO - Epoch 5/150 | train_loss=0.5606 val_loss=0.6135 val_illicit_f1=0.3504 val_illicit_pr_auc=0.3603 monitor(val/illicit_pr_auc)=0.3603
+2026-06-08 21:44:50,725 - INFO - Epoch 6/150 | train_loss=1.4409 val_loss=0.6671 val_illicit_f1=0.2477 val_illicit_pr_auc=0.3480 monitor(val/illicit_pr_auc)=0.3480
+2026-06-08 21:44:53,099 - INFO - Epoch 7/150 | train_loss=1.3093 val_loss=0.6042 val_illicit_f1=0.3471 val_illicit_pr_auc=0.3722 monitor(val/illicit_pr_auc)=0.3722
+2026-06-08 21:44:55,489 - INFO - Epoch 8/150 | train_loss=0.9210 val_loss=0.5930 val_illicit_f1=0.2738 val_illicit_pr_auc=0.3858 monitor(val/illicit_pr_auc)=0.3858
+2026-06-08 21:44:57,882 - INFO - Epoch 9/150 | train_loss=0.4950 val_loss=0.6623 val_illicit_f1=0.3300 val_illicit_pr_auc=0.3053 monitor(val/illicit_pr_auc)=0.3053
+2026-06-08 21:45:00,228 - INFO - Epoch 10/150 | train_loss=1.4539 val_loss=0.5247 val_illicit_f1=0.3446 val_illicit_pr_auc=0.3977 monitor(val/illicit_pr_auc)=0.3977
+2026-06-08 21:45:02,579 - INFO - Epoch 11/150 | train_loss=0.7575 val_loss=0.5974 val_illicit_f1=0.2984 val_illicit_pr_auc=0.3772 monitor(val/illicit_pr_auc)=0.3772
+2026-06-08 21:45:04,982 - INFO - Epoch 12/150 | train_loss=0.7667 val_loss=0.6027 val_illicit_f1=0.3186 val_illicit_pr_auc=0.3403 monitor(val/illicit_pr_auc)=0.3403
+2026-06-08 21:45:07,414 - INFO - Epoch 13/150 | train_loss=0.5050 val_loss=0.5320 val_illicit_f1=0.3306 val_illicit_pr_auc=0.4097 monitor(val/illicit_pr_auc)=0.4097
+2026-06-08 21:45:09,846 - INFO - Epoch 14/150 | train_loss=0.8330 val_loss=0.5781 val_illicit_f1=0.3335 val_illicit_pr_auc=0.3420 monitor(val/illicit_pr_auc)=0.3420
+2026-06-08 21:45:12,264 - INFO - Epoch 15/150 | train_loss=0.5136 val_loss=0.5550 val_illicit_f1=0.3023 val_illicit_pr_auc=0.4057 monitor(val/illicit_pr_auc)=0.4057
+2026-06-08 21:45:14,675 - INFO - Epoch 16/150 | train_loss=0.4798 val_loss=0.5758 val_illicit_f1=0.3355 val_illicit_pr_auc=0.4038 monitor(val/illicit_pr_auc)=0.4038
+2026-06-08 21:45:17,096 - INFO - Epoch 17/150 | train_loss=0.8670 val_loss=0.5293 val_illicit_f1=0.3064 val_illicit_pr_auc=0.4024 monitor(val/illicit_pr_auc)=0.4024
+2026-06-08 21:45:19,574 - INFO - Epoch 18/150 | train_loss=0.4368 val_loss=0.5456 val_illicit_f1=0.3465 val_illicit_pr_auc=0.4163 monitor(val/illicit_pr_auc)=0.4163
+2026-06-08 21:45:22,017 - INFO - Epoch 19/150 | train_loss=0.4350 val_loss=0.5221 val_illicit_f1=0.3490 val_illicit_pr_auc=0.3959 monitor(val/illicit_pr_auc)=0.3959
+2026-06-08 21:45:24,408 - INFO - Epoch 20/150 | train_loss=0.4496 val_loss=0.5182 val_illicit_f1=0.3633 val_illicit_pr_auc=0.4020 monitor(val/illicit_pr_auc)=0.4020
+2026-06-08 21:45:26,855 - INFO - Epoch 21/150 | train_loss=0.9835 val_loss=0.5134 val_illicit_f1=0.3450 val_illicit_pr_auc=0.4224 monitor(val/illicit_pr_auc)=0.4224
+2026-06-08 21:45:29,278 - INFO - Epoch 22/150 | train_loss=0.4243 val_loss=0.5376 val_illicit_f1=0.3433 val_illicit_pr_auc=0.4173 monitor(val/illicit_pr_auc)=0.4173
+2026-06-08 21:45:31,693 - INFO - Epoch 23/150 | train_loss=0.4247 val_loss=0.4938 val_illicit_f1=0.3356 val_illicit_pr_auc=0.4218 monitor(val/illicit_pr_auc)=0.4218
+2026-06-08 21:45:34,048 - INFO - Epoch 24/150 | train_loss=0.5192 val_loss=0.4988 val_illicit_f1=0.3566 val_illicit_pr_auc=0.4155 monitor(val/illicit_pr_auc)=0.4155
+2026-06-08 21:45:36,484 - INFO - Epoch 25/150 | train_loss=0.8572 val_loss=0.5683 val_illicit_f1=0.2714 val_illicit_pr_auc=0.4037 monitor(val/illicit_pr_auc)=0.4037
+2026-06-08 21:45:38,857 - INFO - Epoch 26/150 | train_loss=0.9096 val_loss=0.6499 val_illicit_f1=0.2581 val_illicit_pr_auc=0.3447 monitor(val/illicit_pr_auc)=0.3447
+2026-06-08 21:45:41,264 - INFO - Epoch 27/150 | train_loss=0.4026 val_loss=0.6055 val_illicit_f1=0.3587 val_illicit_pr_auc=0.4079 monitor(val/illicit_pr_auc)=0.4079
+2026-06-08 21:45:43,646 - INFO - Epoch 28/150 | train_loss=0.8970 val_loss=0.5557 val_illicit_f1=0.3142 val_illicit_pr_auc=0.4180 monitor(val/illicit_pr_auc)=0.4180
+2026-06-08 21:45:45,946 - INFO - Epoch 29/150 | train_loss=1.2096 val_loss=0.7035 val_illicit_f1=0.2229 val_illicit_pr_auc=0.3819 monitor(val/illicit_pr_auc)=0.3819
+2026-06-08 21:45:48,237 - INFO - Epoch 30/150 | train_loss=0.3963 val_loss=0.5322 val_illicit_f1=0.3559 val_illicit_pr_auc=0.4160 monitor(val/illicit_pr_auc)=0.4160
+2026-06-08 21:45:50,594 - INFO - Epoch 31/150 | train_loss=0.7872 val_loss=0.4827 val_illicit_f1=0.3568 val_illicit_pr_auc=0.4300 monitor(val/illicit_pr_auc)=0.4300
+2026-06-08 21:45:52,953 - INFO - Epoch 32/150 | train_loss=0.6990 val_loss=0.5805 val_illicit_f1=0.3050 val_illicit_pr_auc=0.4229 monitor(val/illicit_pr_auc)=0.4229
+2026-06-08 21:45:55,298 - INFO - Epoch 33/150 | train_loss=0.3960 val_loss=0.4894 val_illicit_f1=0.3461 val_illicit_pr_auc=0.4193 monitor(val/illicit_pr_auc)=0.4193
+2026-06-08 21:45:57,680 - INFO - Epoch 34/150 | train_loss=0.4041 val_loss=0.5108 val_illicit_f1=0.3616 val_illicit_pr_auc=0.4323 monitor(val/illicit_pr_auc)=0.4323
+2026-06-08 21:45:59,974 - INFO - Epoch 35/150 | train_loss=0.3906 val_loss=0.5012 val_illicit_f1=0.3426 val_illicit_pr_auc=0.3986 monitor(val/illicit_pr_auc)=0.3986
+2026-06-08 21:46:02,336 - INFO - Epoch 36/150 | train_loss=0.4049 val_loss=0.6771 val_illicit_f1=0.2359 val_illicit_pr_auc=0.3737 monitor(val/illicit_pr_auc)=0.3737
+2026-06-08 21:46:04,716 - INFO - Epoch 37/150 | train_loss=0.9177 val_loss=0.4920 val_illicit_f1=0.3516 val_illicit_pr_auc=0.4348 monitor(val/illicit_pr_auc)=0.4348
+2026-06-08 21:46:07,073 - INFO - Epoch 38/150 | train_loss=0.3854 val_loss=0.5265 val_illicit_f1=0.3660 val_illicit_pr_auc=0.4397 monitor(val/illicit_pr_auc)=0.4397
+2026-06-08 21:46:09,389 - INFO - Epoch 39/150 | train_loss=0.3923 val_loss=0.6483 val_illicit_f1=0.2460 val_illicit_pr_auc=0.4022 monitor(val/illicit_pr_auc)=0.4022
+2026-06-08 21:46:11,746 - INFO - Epoch 40/150 | train_loss=0.3792 val_loss=0.5242 val_illicit_f1=0.3485 val_illicit_pr_auc=0.4302 monitor(val/illicit_pr_auc)=0.4302
+2026-06-08 21:46:14,118 - INFO - Epoch 41/150 | train_loss=0.3824 val_loss=0.5198 val_illicit_f1=0.3424 val_illicit_pr_auc=0.4284 monitor(val/illicit_pr_auc)=0.4284
+2026-06-08 21:46:16,497 - INFO - Epoch 42/150 | train_loss=0.3798 val_loss=0.5185 val_illicit_f1=0.3589 val_illicit_pr_auc=0.4271 monitor(val/illicit_pr_auc)=0.4271
+2026-06-08 21:46:18,923 - INFO - Epoch 43/150 | train_loss=0.3938 val_loss=0.4850 val_illicit_f1=0.3478 val_illicit_pr_auc=0.4224 monitor(val/illicit_pr_auc)=0.4224
+2026-06-08 21:46:21,334 - INFO - Epoch 44/150 | train_loss=0.3946 val_loss=0.4916 val_illicit_f1=0.3541 val_illicit_pr_auc=0.4336 monitor(val/illicit_pr_auc)=0.4336
+2026-06-08 21:46:23,754 - INFO - Epoch 45/150 | train_loss=0.3754 val_loss=0.4966 val_illicit_f1=0.3473 val_illicit_pr_auc=0.4386 monitor(val/illicit_pr_auc)=0.4386
+2026-06-08 21:46:26,200 - INFO - Epoch 46/150 | train_loss=0.3680 val_loss=0.5296 val_illicit_f1=0.3606 val_illicit_pr_auc=0.4351 monitor(val/illicit_pr_auc)=0.4351
+2026-06-08 21:46:28,640 - INFO - Epoch 47/150 | train_loss=0.3639 val_loss=0.5459 val_illicit_f1=0.3567 val_illicit_pr_auc=0.4188 monitor(val/illicit_pr_auc)=0.4188
+2026-06-08 21:46:31,034 - INFO - Epoch 48/150 | train_loss=0.3754 val_loss=0.5234 val_illicit_f1=0.3528 val_illicit_pr_auc=0.4300 monitor(val/illicit_pr_auc)=0.4300
+2026-06-08 21:46:33,465 - INFO - Epoch 49/150 | train_loss=0.3813 val_loss=0.5707 val_illicit_f1=0.2934 val_illicit_pr_auc=0.4276 monitor(val/illicit_pr_auc)=0.4276
+2026-06-08 21:46:35,886 - INFO - Epoch 50/150 | train_loss=0.4078 val_loss=0.5585 val_illicit_f1=0.3544 val_illicit_pr_auc=0.4247 monitor(val/illicit_pr_auc)=0.4247
+2026-06-08 21:46:38,280 - INFO - Epoch 51/150 | train_loss=0.8201 val_loss=0.5281 val_illicit_f1=0.3632 val_illicit_pr_auc=0.4376 monitor(val/illicit_pr_auc)=0.4376
+2026-06-08 21:46:40,691 - INFO - Epoch 52/150 | train_loss=0.3667 val_loss=0.6971 val_illicit_f1=0.2583 val_illicit_pr_auc=0.3684 monitor(val/illicit_pr_auc)=0.3684
+2026-06-08 21:46:43,080 - INFO - Epoch 53/150 | train_loss=0.3698 val_loss=0.7334 val_illicit_f1=0.2385 val_illicit_pr_auc=0.3331 monitor(val/illicit_pr_auc)=0.3331
+2026-06-08 21:46:45,533 - INFO - Epoch 54/150 | train_loss=0.3603 val_loss=0.5309 val_illicit_f1=0.3564 val_illicit_pr_auc=0.4269 monitor(val/illicit_pr_auc)=0.4269
+2026-06-08 21:46:47,961 - INFO - Epoch 55/150 | train_loss=0.3696 val_loss=0.5647 val_illicit_f1=0.3213 val_illicit_pr_auc=0.4273 monitor(val/illicit_pr_auc)=0.4273
+2026-06-08 21:46:50,319 - INFO - Epoch 56/150 | train_loss=0.3518 val_loss=0.5371 val_illicit_f1=0.3577 val_illicit_pr_auc=0.4229 monitor(val/illicit_pr_auc)=0.4229
+2026-06-08 21:46:52,600 - INFO - Epoch 57/150 | train_loss=0.3616 val_loss=0.5598 val_illicit_f1=0.3552 val_illicit_pr_auc=0.4318 monitor(val/illicit_pr_auc)=0.4318
+2026-06-08 21:46:54,904 - INFO - Epoch 58/150 | train_loss=0.3635 val_loss=0.5812 val_illicit_f1=0.3487 val_illicit_pr_auc=0.4281 monitor(val/illicit_pr_auc)=0.4281
+2026-06-08 21:46:57,201 - INFO - Epoch 59/150 | train_loss=0.3584 val_loss=0.5408 val_illicit_f1=0.3649 val_illicit_pr_auc=0.4308 monitor(val/illicit_pr_auc)=0.4308
+2026-06-08 21:46:59,490 - INFO - Epoch 60/150 | train_loss=0.3524 val_loss=0.5368 val_illicit_f1=0.3625 val_illicit_pr_auc=0.4331 monitor(val/illicit_pr_auc)=0.4331
+2026-06-08 21:46:59,491 - INFO - Early stopping at epoch 60 after 20 stale evals
+2026-06-08 21:47:00,626 - INFO - Best threshold on validation (val/illicit_f1) = 0.8808 (score=0.4227)
+2026-06-08 21:47:00,627 - INFO - Test metrics | Loss: 0.5548, Illicit F1: 0.4518, Illicit PR-AUC: 0.4006, Illicit ROC-AUC: 0.9551, Licit F1: 0.9722
+2026-06-08 21:47:00,627 - INFO - Saved final metrics to outputs/PNA_LIS-4/test_metrics.json
+
+======================================================
+  Finished at  : Mon Jun  8 09:47:21 PM CEST 2026
+======================================================

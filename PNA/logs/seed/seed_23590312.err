@@ -1,0 +1,244 @@
+============================================================================================== 
+Warning! Mixing Conda and module environments may lead to corruption of the
+user environment. 
+We do not recommend users mixing those two environments unless absolutely
+necessary. Note that 
+SURF does not provide any support for Conda environment.
+For more information, please refer to our software policy page:
+https://servicedesk.surf.nl/wiki/display/WIKI/Software+policy+Snellius#SoftwarepolicySnellius-UseofAnacondaandMinicondaenvironmentsonSnellius 
+
+Remember that many packages have already been installed on the system and can
+be loaded using 
+the 'module load <package__name>' command. If you are uncertain if a package is
+already available 
+on the system, please use 'module avail' or 'module spider' to search for it.
+============================================================================================== 
+wandb: WARNING If you're specifying your api key in code, ensure this code is not shared publicly.
+wandb: WARNING Consider setting the WANDB_API_KEY environment variable, or running `wandb login` from the command line.
+wandb: [wandb.login()] Using explicit session credentials for https://api.wandb.ai.
+wandb: Appending key for api.wandb.ai to your netrc file: /home/ghonkoop/.netrc
+wandb: Currently logged in as: kusta (hierarchical-subgraph-transformer) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.26.1
+wandb: Run data is saved locally in /gpfs/home6/ghonkoop/repos/PNA/wandb/run-20260608_220340-38jzidcb
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run PNA_HIM-2_seed_42
+wandb: ⭐️ View project at https://wandb.ai/hierarchical-subgraph-transformer/PNA
+wandb: 🚀 View run at https://wandb.ai/hierarchical-subgraph-transformer/PNA/runs/38jzidcb
+/gpfs/home6/ghonkoop/repos/PNA/train.py:431: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  ckpt = torch.load(checkpoint_path, map_location=device)
+wandb: updating run metadata
+wandb: uploading output.log; uploading wandb-summary.json; uploading config.yaml
+wandb: 
+wandb: Run history:
+wandb:         best_threshold ▁
+wandb: checkpoint_best_metric ▁
+wandb:       checkpoint_epoch ▁
+wandb:                  epoch ▁▁▁▁▁▂▂▂▂▂▂▃▃▃▃▄▄▄▄▄▅▅▅▆▆▆▆▆▆▆▆▇▇▇▇▇████
+wandb:             num_params ▁
+wandb:        test/illicit_f1 ▁
+wandb:    test/illicit_pr_auc ▁
+wandb: test/illicit_precision ▁
+wandb:    test/illicit_recall ▁
+wandb:   test/illicit_roc_auc ▁
+wandb:                    +29 ...
+wandb: 
+wandb: Run summary:
+wandb:         best_threshold 0.85769
+wandb: checkpoint_best_metric 0.62561
+wandb:       checkpoint_epoch 108
+wandb:                  epoch 128
+wandb:             num_params 1038209
+wandb:        test/illicit_f1 0.54267
+wandb:    test/illicit_pr_auc 0.63269
+wandb: test/illicit_precision 0.58261
+wandb:    test/illicit_recall 0.50785
+wandb:   test/illicit_roc_auc 0.96379
+wandb:                    +29 ...
+wandb: 
+wandb: 🚀 View run PNA_HIM-2_seed_42 at: https://wandb.ai/hierarchical-subgraph-transformer/PNA/runs/38jzidcb
+wandb: ⭐️ View project at: https://wandb.ai/hierarchical-subgraph-transformer/PNA
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20260608_220340-38jzidcb/logs
+wandb: WARNING If you're specifying your api key in code, ensure this code is not shared publicly.
+wandb: WARNING Consider setting the WANDB_API_KEY environment variable, or running `wandb login` from the command line.
+wandb: [wandb.login()] Using explicit session credentials for https://api.wandb.ai.
+wandb: Appending key for api.wandb.ai to your netrc file: /home/ghonkoop/.netrc
+wandb: Currently logged in as: kusta (hierarchical-subgraph-transformer) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.26.1
+wandb: Run data is saved locally in /gpfs/home6/ghonkoop/repos/PNA/wandb/run-20260608_222419-ev3246kn
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run PNA_HIM-2_seed_43
+wandb: ⭐️ View project at https://wandb.ai/hierarchical-subgraph-transformer/PNA
+wandb: 🚀 View run at https://wandb.ai/hierarchical-subgraph-transformer/PNA/runs/ev3246kn
+/gpfs/home6/ghonkoop/repos/PNA/train.py:431: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  ckpt = torch.load(checkpoint_path, map_location=device)
+wandb: updating run metadata
+wandb: uploading output.log; uploading wandb-summary.json; uploading config.yaml
+wandb: 
+wandb: Run history:
+wandb:         best_threshold ▁
+wandb: checkpoint_best_metric ▁
+wandb:       checkpoint_epoch ▁
+wandb:                  epoch ▁▁▁▁▂▂▂▃▃▃▃▃▃▃▃▄▄▄▄▅▅▅▅▅▅▅▆▆▆▆▆▆▇▇▇▇▇▇██
+wandb:             num_params ▁
+wandb:        test/illicit_f1 ▁
+wandb:    test/illicit_pr_auc ▁
+wandb: test/illicit_precision ▁
+wandb:    test/illicit_recall ▁
+wandb:   test/illicit_roc_auc ▁
+wandb:                    +29 ...
+wandb: 
+wandb: Run summary:
+wandb:         best_threshold 0.88077
+wandb: checkpoint_best_metric 0.63339
+wandb:       checkpoint_epoch 149
+wandb:                  epoch 150
+wandb:             num_params 1038209
+wandb:        test/illicit_f1 0.56571
+wandb:    test/illicit_pr_auc 0.63737
+wandb: test/illicit_precision 0.57341
+wandb:    test/illicit_recall 0.5582
+wandb:   test/illicit_roc_auc 0.96482
+wandb:                    +29 ...
+wandb: 
+wandb: 🚀 View run PNA_HIM-2_seed_43 at: https://wandb.ai/hierarchical-subgraph-transformer/PNA/runs/ev3246kn
+wandb: ⭐️ View project at: https://wandb.ai/hierarchical-subgraph-transformer/PNA
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20260608_222419-ev3246kn/logs
+wandb: WARNING If you're specifying your api key in code, ensure this code is not shared publicly.
+wandb: WARNING Consider setting the WANDB_API_KEY environment variable, or running `wandb login` from the command line.
+wandb: [wandb.login()] Using explicit session credentials for https://api.wandb.ai.
+wandb: Appending key for api.wandb.ai to your netrc file: /home/ghonkoop/.netrc
+wandb: Currently logged in as: kusta (hierarchical-subgraph-transformer) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.26.1
+wandb: Run data is saved locally in /gpfs/home6/ghonkoop/repos/PNA/wandb/run-20260608_224839-81is4dyu
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run PNA_HIM-2_seed_44
+wandb: ⭐️ View project at https://wandb.ai/hierarchical-subgraph-transformer/PNA
+wandb: 🚀 View run at https://wandb.ai/hierarchical-subgraph-transformer/PNA/runs/81is4dyu
+/gpfs/home6/ghonkoop/repos/PNA/train.py:431: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  ckpt = torch.load(checkpoint_path, map_location=device)
+wandb: updating run metadata
+wandb: uploading output.log; uploading wandb-summary.json; uploading config.yaml
+wandb: 
+wandb: Run history:
+wandb:         best_threshold ▁
+wandb: checkpoint_best_metric ▁
+wandb:       checkpoint_epoch ▁
+wandb:                  epoch ▁▁▁▂▂▂▂▃▃▃▃▃▄▄▄▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▆▆▇▇▇▇▇▇▇█
+wandb:             num_params ▁
+wandb:        test/illicit_f1 ▁
+wandb:    test/illicit_pr_auc ▁
+wandb: test/illicit_precision ▁
+wandb:    test/illicit_recall ▁
+wandb:   test/illicit_roc_auc ▁
+wandb:                    +29 ...
+wandb: 
+wandb: Run summary:
+wandb:         best_threshold 0.85769
+wandb: checkpoint_best_metric 0.62798
+wandb:       checkpoint_epoch 149
+wandb:                  epoch 150
+wandb:             num_params 1038209
+wandb:        test/illicit_f1 0.55088
+wandb:    test/illicit_pr_auc 0.63439
+wandb: test/illicit_precision 0.55666
+wandb:    test/illicit_recall 0.54521
+wandb:   test/illicit_roc_auc 0.96488
+wandb:                    +29 ...
+wandb: 
+wandb: 🚀 View run PNA_HIM-2_seed_44 at: https://wandb.ai/hierarchical-subgraph-transformer/PNA/runs/81is4dyu
+wandb: ⭐️ View project at: https://wandb.ai/hierarchical-subgraph-transformer/PNA
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20260608_224839-81is4dyu/logs
+wandb: WARNING If you're specifying your api key in code, ensure this code is not shared publicly.
+wandb: WARNING Consider setting the WANDB_API_KEY environment variable, or running `wandb login` from the command line.
+wandb: [wandb.login()] Using explicit session credentials for https://api.wandb.ai.
+wandb: Appending key for api.wandb.ai to your netrc file: /home/ghonkoop/.netrc
+wandb: Currently logged in as: kusta (hierarchical-subgraph-transformer) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.26.1
+wandb: Run data is saved locally in /gpfs/home6/ghonkoop/repos/PNA/wandb/run-20260608_231249-5kxycx1q
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run PNA_HIM-2_seed_45
+wandb: ⭐️ View project at https://wandb.ai/hierarchical-subgraph-transformer/PNA
+wandb: 🚀 View run at https://wandb.ai/hierarchical-subgraph-transformer/PNA/runs/5kxycx1q
+/gpfs/home6/ghonkoop/repos/PNA/train.py:431: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  ckpt = torch.load(checkpoint_path, map_location=device)
+wandb: updating run metadata
+wandb: uploading history steps 111-113, summary, console lines 22-27
+wandb: 
+wandb: Run history:
+wandb:         best_threshold ▁
+wandb: checkpoint_best_metric ▁
+wandb:       checkpoint_epoch ▁
+wandb:                  epoch ▁▁▁▁▁▂▂▂▂▃▃▃▃▃▃▄▄▄▄▄▄▅▅▅▅▅▅▅▆▆▆▆▇▇▇▇▇███
+wandb:             num_params ▁
+wandb:        test/illicit_f1 ▁
+wandb:    test/illicit_pr_auc ▁
+wandb: test/illicit_precision ▁
+wandb:    test/illicit_recall ▁
+wandb:   test/illicit_roc_auc ▁
+wandb:                    +29 ...
+wandb: 
+wandb: Run summary:
+wandb:         best_threshold 0.88077
+wandb: checkpoint_best_metric 0.62108
+wandb:       checkpoint_epoch 93
+wandb:                  epoch 113
+wandb:             num_params 1038209
+wandb:        test/illicit_f1 0.52853
+wandb:    test/illicit_pr_auc 0.62703
+wandb: test/illicit_precision 0.60559
+wandb:    test/illicit_recall 0.46887
+wandb:   test/illicit_roc_auc 0.96401
+wandb:                    +29 ...
+wandb: 
+wandb: 🚀 View run PNA_HIM-2_seed_45 at: https://wandb.ai/hierarchical-subgraph-transformer/PNA/runs/5kxycx1q
+wandb: ⭐️ View project at: https://wandb.ai/hierarchical-subgraph-transformer/PNA
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20260608_231249-5kxycx1q/logs
+wandb: WARNING If you're specifying your api key in code, ensure this code is not shared publicly.
+wandb: WARNING Consider setting the WANDB_API_KEY environment variable, or running `wandb login` from the command line.
+wandb: [wandb.login()] Using explicit session credentials for https://api.wandb.ai.
+wandb: Appending key for api.wandb.ai to your netrc file: /home/ghonkoop/.netrc
+wandb: Currently logged in as: kusta (hierarchical-subgraph-transformer) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.26.1
+wandb: Run data is saved locally in /gpfs/home6/ghonkoop/repos/PNA/wandb/run-20260608_233119-0y1shskt
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run PNA_HIM-2_seed_46
+wandb: ⭐️ View project at https://wandb.ai/hierarchical-subgraph-transformer/PNA
+wandb: 🚀 View run at https://wandb.ai/hierarchical-subgraph-transformer/PNA/runs/0y1shskt
+/gpfs/home6/ghonkoop/repos/PNA/train.py:431: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  ckpt = torch.load(checkpoint_path, map_location=device)
+wandb: uploading wandb-summary.json; uploading config.yaml; uploading output.log
+wandb: 
+wandb: Run history:
+wandb:         best_threshold ▁
+wandb: checkpoint_best_metric ▁
+wandb:       checkpoint_epoch ▁
+wandb:                  epoch ▁▁▁▂▂▂▂▂▂▂▂▂▂▃▃▃▃▄▄▄▄▄▄▄▄▅▅▅▅▆▆▆▆▆▆▇▇▇▇█
+wandb:             num_params ▁
+wandb:        test/illicit_f1 ▁
+wandb:    test/illicit_pr_auc ▁
+wandb: test/illicit_precision ▁
+wandb:    test/illicit_recall ▁
+wandb:   test/illicit_roc_auc ▁
+wandb:                    +29 ...
+wandb: 
+wandb: Run summary:
+wandb:         best_threshold 0.85769
+wandb: checkpoint_best_metric 0.62627
+wandb:       checkpoint_epoch 149
+wandb:                  epoch 150
+wandb:             num_params 1038209
+wandb:        test/illicit_f1 0.55072
+wandb:    test/illicit_pr_auc 0.63251
+wandb: test/illicit_precision 0.55635
+wandb:    test/illicit_recall 0.54521
+wandb:   test/illicit_roc_auc 0.96405
+wandb:                    +29 ...
+wandb: 
+wandb: 🚀 View run PNA_HIM-2_seed_46 at: https://wandb.ai/hierarchical-subgraph-transformer/PNA/runs/0y1shskt
+wandb: ⭐️ View project at: https://wandb.ai/hierarchical-subgraph-transformer/PNA
+wandb: Synced 5 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20260608_233119-0y1shskt/logs

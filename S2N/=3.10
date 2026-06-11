@@ -1,0 +1,34 @@
+2 channel Terms of Service accepted
+Channels:
+ - defaults
+ - conda-forge
+Platform: linux-64
+Collecting package metadata (repodata.json): - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / done
+Solving environment: \ done
+
+## Package Plan ##
+
+  environment location: /home/ghonkoop/.conda/envs/s2n_env
+
+  added / updated specs:
+    - conda-forge::typing_extensions
+
+
+The following packages will be downloaded:
+
+    package                    |            build
+    ---------------------------|-----------------
+    typing_extensions-4.14.1   |     pyhe01879c_0          50 KB  conda-forge
+    ------------------------------------------------------------
+                                           Total:          50 KB
+
+The following NEW packages will be INSTALLED:
+
+  typing_extensions  conda-forge/noarch::typing_extensions-4.14.1-pyhe01879c_0 
+
+
+
+Downloading and Extracting Packages: ...working...typing_extensions-4. | 50 KB     |            |   0% typing_extensions-4. | 50 KB     | ########## | 100% typing_extensions-4. | 50 KB     | ########## | 100%                                                       done
+Preparing transaction: / done
+Verifying transaction: \ | / - \ | / - done
+Executing transaction: | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / - \ | / done
