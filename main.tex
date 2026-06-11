@@ -1,0 +1,245 @@
+\documentclass[12pt, twocolumn]{report} % or article
+
+\usepackage{graphicx, color}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage{natbib}
+\newcommand{\red}[1]{{\color{red}{#1}}}
+\usepackage{stfloats}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage[dvipsnames]{xcolor}
+\begin{document}
+
+\begin{titlepage}
+
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
+
+\center % Center everything on the page
+
+ 
+
+%----------------------------------------------------------------------------------------
+
+%	HEADING SECTIONS
+
+%----------------------------------------------------------------------------------------
+
+
+\textsc{\Large MSc Artificial Intelligence}\\[0.2cm]
+
+
+
+%----------------------------------------------------------------------------------------
+
+%	TITLE SECTION
+
+%----------------------------------------------------------------------------------------
+
+
+
+\HRule \\[0.4cm]
+
+{ \huge \bfseries Fraud detection using hierarchical subgraph-transformers on multigraphs}\\[0.4cm] % Title of your document
+
+\HRule \\[0.5cm]
+
+ 
+
+%----------------------------------------------------------------------------------------
+
+%	AUTHOR SECTION
+
+%----------------------------------------------------------------------------------------
+
+
+
+by\\[0.2cm]
+
+\textsc{\Large Gilian Honkoop}\\[0.2cm] %you name
+
+13710729\\[1cm]
+
+
+
+
+
+%----------------------------------------------------------------------------------------
+
+%	DATE SECTION
+
+%----------------------------------------------------------------------------------------
+
+
+
+{\Large \today}\\[1cm] % Date, change the \today to a set date if you want to be precise
+
+
+
+36EC\\ %
+
+Jan - Jun 2026\\[1cm]%
+
+
+
+%----------------------------------------------------------------------------------------
+
+%	COMMITTEE SECTION
+
+%----------------------------------------------------------------------------------------
+
+\begin{minipage}[t]{0.4\textwidth}
+
+\begin{flushleft} \large
+
+\emph{Supervisor:} \\
+
+F. Gholamzadeh Nasrabadi 
+
+\end{flushleft}
+
+\end{minipage}
+
+~
+
+\begin{minipage}[t]{0.4\textwidth}
+
+\begin{flushright} \large
+
+\emph{Examiner:} \\
+
+TBD\\
+
+\vspace{0.5cm}
+
+\emph{Second reader:} \\
+
+F. Gholamzadeh Nasrabadi \\
+
+\end{flushright}
+
+\end{minipage}\\[2cm]
+
+
+
+%----------------------------------------------------------------------------------------
+
+%	LOGO SECTION
+
+%----------------------------------------------------------------------------------------
+
+
+
+
+\includegraphics[width=10cm]{uvalogo_regular_p_nl.eps}
+
+ 
+
+%----------------------------------------------------------------------------------------
+
+
+
+\vfill % Fill the rest of the page with whitespace
+
+\end{titlepage}
+
+\pagenumbering{roman}
+
+% \tableofcontents
+
+\begin{abstract}
+\red{Provide a short overview and description of your thesis here.}
+\end{abstract}
+
+\pagenumbering{arabic}
+
+\section*{1. Introduction}
+% \addcontentsline{toc}{section}{Introduction}
+
+With a large part of financial transactions happening online, fraud detection has become an important part of many financial systems. Money laundering has proven to be especially challenging, as it involves complex transaction pipelines with  structured multi-step patterns rather than individual anomalies. This includes groups of accounts and transactions rather than single entities. As modern fraud is constantly evolving and financial datasets are generally large, older rule-based systems and manual audits have suffered in their effectiveness. 
+
+As financial transactions can naturally be modeled as graphs, graph based machine learning (ML) methods have become popular for detecting different types of fraud. Traditional message-passing graph neural networks (GNNs) have been shown to be effective in learning graph-structured data. However, these GNNs typically only capture local neighborhood information, instead of higher-order structural motifs that are inherent to modern money laundering schemes.
+
+Recent advances like FraudGT \cite{fraudgt2024} have introduced Graph Transformers to leverage edge-based features and attention mechanisms to increase model expressivity. This allows the model to learn complex structures while maintaining computational efficiency, as is required for large financial datasets. However, Graph Transformers operate primarily on a flat graph structure with node-wise representations. As money laundering involves complex multi-node schemes, it can be useful to detect multi-node money laundering clusters. The Hierarchical Scalable Graph Transformer (HSGT) \cite{zhu2023hierarchicaltransformerscalablegraph} coarsens the graph into multiple hierarchy layers. This allows for transformers in later blocks to incorporate information from multiple hierarchy-levels, effectively increasing the receptive field op each node. However, the current architecture is not adapted for directed multi-relational edges. In addition, coarsening and performing attention over multiple hierarchy layers is computationally expensive. 
+
+Subgraph representation learning has also shown success in different subgraph-level tasks, as it can more easily incorporate topological information into the model. However, existing subgraph methods often suffer from high computational costs \cite{kim2024translating} or a lack of integration with the global attention mechanisms found in Transformers \cite{subgraphormer2024}. Subgraph-To-Node (S2N) \cite{kim2024translating} demonstrated that coarsening subgraphs into single nodes can significantly improve computational efficiency. However, S2N is not directly applicable to fraud detection as financial graphs are directed multigraphs and also contain edge-features, whereas S2N uses undirected simple graphs.
+
+\bigskip
+\noindent To address previous limitations, we propose a novel Hierarchical Subgraph Transformer (HST). This dual-layered architecture first coarsens subgraphs from the dataset into individual nodes using graph transformers (GTs). This layer utilizes multi-relational attention using transaction based edge features along with node features to accurately summarize a subgraph into a single super-node, reducing computational complexity in subsequent steps. The second layer applies a modified FraudGT framework on the coarsened super-nodes. In this second layer, global positional encodings (GPEs) will be added to enrich subgraph representations with positional information. This dual-step approach results in a 2-layer hierarchy of GTs to obtain subgraph-level representations and predictions.
+
+In summary, the contributions this research aims at are threefold:
+\begin{enumerate}
+    \item A novel Hierarchical Subgraph Transformer architecture combining subgraph representation learning with graph transformers, capable of incorporating multi-graph edge features.
+    \item Evaluation on various large-scale publicly available financial datasets and comparison with other state-of-the-art methods.
+    \item maybe more?
+\end{enumerate}
+
+\section*{2. Related work}
+
+GNNs have become the most common paradigm for relational fraud detection. Spectral approaches such as Graph Convolutional Networks (GCNs) \cite{kipf2017semi} and spatial message-passing models such as GraphSAGE \cite{hamilton2017inductive} and Graph Attention Networks (GAT) \cite{velivckovic2018gat} have demonstrated strong performance on node classification tasks. Other works explicitly target fraud scenarios, including CARE-GNN \cite{dou2020enhancing}, which addresses class imbalance and camouflage behavior. 
+
+Despite their success, traditional message-passing GNNs primarily aggregate information from local neighborhoods. This locality bias can limit their ability to capture higher-order structural patterns characteristic of organized fraud and money laundering schemes.
+
+\bigskip
+\noindent Graph Transformers (GTs) have recently been proposed to integrate global attention mechanisms with graph-structured data. This tries overcome the locality limitations of standard GNNs. Inspired by the Transformer architecture \cite{vaswani2017attention}, models such as Graphormer \cite{ying2021graphormer}, SAN \cite{kreuzer2021rethinking} and GPS \cite{rampasek2022recipe} incorporate structural encodings to make self-attention aware of graph topology.
+
+FraudGT \cite{fraudgt2024} incorporates edge-aware attention and structural encodings such as port numbering and ego identifiers to better capture transactional patterns in financial multigraphs with GTs. These approaches demonstrate improved expressivity compared to traditional message-passing GNNs, particularly in dense or heterogeneous transaction networks.
+
+However, most Graph Transformers operate at the node level and assume a flat graph structure. They do not explicitly model subgraph-level representations, which are crucial for detecting coordinated multi-account fraud schemes. HSGT \cite{zhu2023hierarchicaltransformerscalablegraph} made initial steps to overcome this limitation, by coarsening graphs into multiple hierarchies before using multi-layer self-attention. While good good node-level tasks, it is not efficient for subgraph-level tasks as it involves redundant steps. Moreover, it was not designed for financial datasets and multi-graphs.
+
+\bigskip
+\noindent Subgraph-level learning has recently gained attention as many graph tasks require reasoning over motifs, communities, or localized regions rather than individual nodes. SEAL \cite{zhang2018link} introduced subgraph extraction for link prediction, while Graph Substructure Networks \cite{bouritsas2022improving} improve model expressivity through predefined structural motifs.
+
+More recent work focuses on directly learning subgraph representations. Subgraphormer \cite{subgraphormer2024} extends Transformer architectures to subgraph-level tasks, and SUN \cite{franca2022subgraph} learns permutation-invariant subgraph embeddings. However, these approaches typically incur high computational costs due to repeated subgraph extraction and encoding, limiting scalability on large financial transaction graphs \cite{kim2024translating}.
+
+To address this issue, Subgraph-To-Node (S2N) \cite{kim2024translating} proposes an algorithm for translating subgraphs into a single node, enabling efficient hierarchical reasoning while preserving structural information. Similarly, \citep{2017supernode} proposed a method in which all nodes in a subgraph are artificially connected to a virtual-node to obtain a single representation of the subgraph. However, both methods do not utilize attention to obtain the representation of the super-node.
+
+\section*{3. Method}
+method + figures
+
+\section*{4. Datasets}
+
+\section*{5. Experiments}
+
+\bigskip
+\noindent \textbf{Baselines: }
+For comparison, other subgraph level methods will be used. These are S2N, GLASS \cite{glass2022} and a Principal Neighbourhood Aggregation (PNA) method, adapted from \citep{corso2020pna}. As S2N and GLASS work for undirected simple graphs, modifications must be made before they can be used on the AML and SAML-D datasets. PNA is adapted for both subgraph-level in the first HST layer, and for node-level in the second HST layer.
+
+\bigskip
+\noindent \textbf{Evaluation: }
+The main evaluation metrics for qualitative model comparison will be the F1 score of the minor class. PR-AUC and ROC-AUC scores will also be used.
+
+\section*{6. Results}
+
+\begin{table*}[t] % h for Here, t for Top, b for Bottom
+    \centering
+    \caption{Benchmark results of F1 scores of various subgraph methods. Mean and standard deviation is calculated over 5 runs with different seeds. The best mean result is \textcolor{OliveGreen}{highlighted}.}
+    \vspace{0.2cm}
+    \begin{tabular}{>{\footnotesize}l >{\footnotesize}c >{\footnotesize}c >{\footnotesize}c >{\footnotesize}c >{\footnotesize}c >{\footnotesize}c}
+        \hline
+        {Method} & AML HI-Small & AML LI-Small & AML HI-Medium & AML LI-Medium & SAML-D \\
+        \hline\\[-2.3ex] 
+        % SubGNN & $\pm$ & $\pm$ & $\pm$ & $\pm$ &  $\pm$ \\
+        S2N & 0.1733 $\pm$ 0.0334 & 0.1892 $\pm$ 0.0104 & 0.3181 $\pm$ 0.0218 & 0.2482 $\pm$ 0.0171 & 0.4282 $\pm$ 0.2095 \\
+        GLASS & 0.3763 $\pm$ 0.0029 & 0.3601 $\pm$ 0.0023 & 0.3194 $\pm$ 0.0091 & 0.2922 $\pm$ 0.0029 & 0.6899 $\pm$ 0.0158 \\
+        PNA & 0.4586 $\pm$ 0.0115 & 0.4280 $\pm$ 0.0078 & 0.5477 $\pm$ 0.0135 & \textcolor{OliveGreen}{0.4813 $\pm$ 0.0058} & \textcolor{OliveGreen}{0.907 $\pm$ 0.0183} \\
+        \hline\\[-2.3ex] 
+        HST$_{FraudGT}$ & 0.4174 $\pm$ 0.1414 & 0.2446 $\pm$ 0.0424 & 0.3696 $\pm$ 0.1365 & 0.3406 $\pm$ 0.1064 & 0.4846 $\pm$ 0.0608 \\
+        \quad +att\_aggr & \textcolor{OliveGreen}{0.5188 $\pm$ 0.0354} & \textcolor{OliveGreen}{0.4446 $\pm$ 0.0863} & \textcolor{OliveGreen}{0.6411 $\pm$ 0.0099} & 0.4457 $\pm$ 0.1661 & 0.6496 $\pm$ 0.0294 \\
+        HST$_{PNA}$ & 0.5310 $\pm$ 0.0758 & 0.3404 $\pm$ 0.2088 & 0.6168 $\pm$ 0.2628 & 0.5287 $\pm$ 0.2192 & 0.6826 $\pm$ 0.1498 \\
+        \quad +att\_aggr &  $\pm$  &  $\pm$  &  $\pm$  &  $\pm$  & 0.8720 $\pm$ 0.0652 \\
+    \end{tabular}
+\end{table*}
+
+\section*{7. Discussion}
+\subsection*{Future work}
+
+\section*{Conclusion}
+
+\bibliographystyle{plain}
+\bibliography{bibentries}
+
+\end{document}
+
