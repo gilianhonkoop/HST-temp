@@ -1,0 +1,40 @@
+name: SubGNN
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - setuptools=65.5.1
+  - wheel
+  - numpy
+  - scipy
+  - pandas
+  - networkx
+  - matplotlib
+  - seaborn
+  - scikit-learn
+  - tqdm
+  - pyyaml
+  - commentjson
+  - joblib
+  - tensorboard
+  - pytorch::pytorch=2.5.1
+  - pytorch::pytorch-cuda=12.4
+  - pytorch::torchvision
+  - pip:
+    - --find-links https://data.pyg.org/whl/torch-2.5.1+cu124.html
+    - torch-geometric==2.6.1
+    - torch-scatter
+    - torch-sparse
+    - torch-cluster
+    - torch-spline-conv
+    - optuna
+    - optuna-integration[pytorch_lightning]
+    - python-dotenv
+    - wandb
+    - fastdtw==0.3.4
+    - pyreadr
+    - pytorch-lightning==0.7.1

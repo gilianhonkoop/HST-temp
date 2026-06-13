@@ -1,0 +1,148 @@
+{
+    "data": {
+        "task":"aml_hi_small",
+        "data_dir": "/home/ghonkoop/data/aml/HI-Small",
+        "dataset_type": "ibm_aml",
+        "aml_split": "temporal",
+        "aml_train_ratio": 0.60,
+        "aml_val_ratio": 0.20
+    },
+    "wandb": {
+        "wandb_logging": true,
+        "project": "SubGNN",
+        "name": "optuna-HIS-1",
+        "epoch_logging": true,
+        "log_best_only": true,
+        "top_k": 3
+    },
+    "tb": {
+        "tb_logging":false,
+        "dir" : "tensorboard",
+        "name": "optuna-HIS-1"
+    },
+    "early_stopping": {
+        "enabled": true,
+        "patience": 25,
+        "min_delta": 0.0
+    },
+    "optuna":{
+        "opt_n_trials" : 20,
+        "opt_n_cores" : 1,
+        "monitor_metric" : "val_illicit_pr_auc",
+        "opt_direction" : "maximize" ,
+        "sampler" : "random", 
+        "pruning" : false
+    },
+    "threshold_search": {
+        "enabled": true,
+        "metric": "minor_f1",
+        "n_trials": 50,
+        "lower": 0.05,
+        "upper": 0.95
+    },
+    "run_test": true,
+
+    "hyperparams_fix" : {
+        "max_epochs": 150,
+        "use_neighborhood": false, 
+        "use_structure": true,
+        "use_position": false,
+        "seed": 3,
+        "structure_patch_type": "triangular_random_walk",
+        "lstm_aggregator": "last",
+        "n_processes": 20,
+        "resample_anchor_patches": false,
+        "freeze_node_embeds":false,
+        "use_mpn_projection":true,
+        "print_train_times":false,
+        "compute_similarities":false,
+        "sample_walk_len":50,
+        "n_triangular_walks": 5, 
+        "random_walk_len":10,  
+        "rw_beta" : 0.65,
+        "ff_attn": false,
+        "max_sim_epochs": 5,
+        "embedding_type": "gin",
+        "trainable_cc": true,
+        "auto_lr_find": false,
+        "use_weighted_sampler": true,
+        "auto_class_weights": true,
+        "pred_threshold": 0.5
+    },
+    "hyperparams_optuna": {
+        "batch_size" :{
+            "type" : "suggest_categorical",
+            "args" : [[ 512 ] ]
+        },
+        "learning_rate" :{
+            "type" : "suggest_float",
+            "args" : [0.0001, 0.01],
+            "kwargs" : {"log":true}
+        },
+        "illicit_class_weight" :{
+            "type" : "suggest_float",
+            "args" : [1.0, 30.0]
+        },
+        "grad_clip" : {
+            "type" : "suggest_float",
+            "args" : [0.0, 0.5]
+        },
+        "n_layers": {
+            "type" : "suggest_int",
+            "args" : [1,5]
+        },
+        "neigh_sample_border_size" : {
+            "type" : "suggest_int",
+            "args" : [1,4]
+        },
+        "n_anchor_patches_pos_out": {
+            "type" : "suggest_int",
+            "args" : [50,200]
+        }, 
+        "n_anchor_patches_pos_in": {
+            "type" : "suggest_int",
+            "args" : [25,75]
+        },
+        "n_anchor_patches_N_in": {
+            "type" : "suggest_int",
+            "args" : [10,25]
+        }, 
+        "n_anchor_patches_N_out": {
+            "type" : "suggest_int",
+            "args" : [25,75]
+        }, 
+        "n_anchor_patches_structure": {
+            "type" : "suggest_int",
+            "args" : [15,45]
+        }, 
+        "linear_hidden_dim_1" : {
+            "type" : "suggest_categorical",
+            "args" : [[128]]
+        },
+        "linear_hidden_dim_2" : {
+            "type" : "suggest_categorical",
+            "args" : [[64]]
+        },
+        "node_embed_size" :{
+            "type" : "suggest_categorical",
+            "args" : [[ 128] ]
+        },
+        "lstm_dropout" : {
+            "type" : "suggest_float",
+            "args" : [0.0, 0.4]
+        },
+        "lstm_n_layers" : {
+            "type" : "suggest_int",
+            "args" : [1,2]
+        },
+        "lin_dropout" : {
+            "type" : "suggest_float",
+            "args" : [0.0, 0.4]
+        },
+        "cc_aggregator":{
+            "type" : "suggest_categorical",
+            "args" : [[ "sum","max"] ]
+        }
+    }
+
+}

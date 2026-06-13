@@ -1,0 +1,92 @@
+{
+    "data": {
+        "task": "samld",
+        "data_dir": "/home/ghonkoop/data/saml-d",
+        "dataset_type": "ibm_aml",
+        "aml_split": "class_temporal",
+        "aml_train_ratio": 0.60,
+        "aml_val_ratio": 0.20
+    },
+    "wandb": {
+        "wandb_logging": true,
+        "project": "SubGNN",
+        "name": "SAMLD-edges",
+        "epoch_logging": true,
+        "incremental_logging": true,
+        "log_best_only": true,
+        "top_k": 1
+    },
+    "tb": {
+        "tb_logging": false,
+        "dir": "tensorboard",
+        "name": "SAMLD-edges"
+    },
+    "early_stopping": {
+        "enabled": true,
+        "patience": 5,
+        "min_delta": 0.0
+    },
+    "optuna": {
+        "opt_n_trials": 1,
+        "opt_n_cores": 1,
+        "monitor_metric": "val_illicit_pr_auc",
+        "opt_direction": "maximize",
+        "sampler": "random",
+        "pruning": false
+    },
+    "threshold_search": {
+        "enabled": true,
+        "metric": "minor_f1",
+        "n_trials": 50,
+        "lower": 0.05,
+        "upper": 0.95
+    },
+    "run_test": true,
+    "hyperparams_fix": {
+        "max_epochs": 50,
+        "use_neighborhood": false,
+        "use_structure": false,
+        "use_position": false,
+        "seed": 42,
+        "structure_patch_type": "triangular_random_walk",
+        "lstm_aggregator": "last",
+        "n_processes": 20,
+        "resample_anchor_patches": false,
+        "freeze_node_embeds": false,
+        "use_mpn_projection": true,
+        "print_train_times": false,
+        "compute_similarities": false,
+        "sample_walk_len": 50,
+        "n_triangular_walks": 5,
+        "random_walk_len": 10,
+        "rw_beta": 0.65,
+        "ff_attn": false,
+        "max_sim_epochs": 5,
+        "embedding_type": "gin",
+        "trainable_cc": false,
+        "use_weighted_sampler": true,
+        "auto_class_weights": false,
+        "pred_threshold": 0.5,
+        "auto_lr_find": false,
+        "structure_similarity_fn": "dtw",
+        "batch_size": 512,
+        "learning_rate": 0.001,
+        "grad_clip": 0.31324949511650496,
+        "n_layers": 4,
+        "neigh_sample_border_size": 2,
+        "n_anchor_patches_pos_out": 175,
+        "n_anchor_patches_pos_in": 39,
+        "n_anchor_patches_N_in": 20,
+        "n_anchor_patches_N_out": 49,
+        "n_anchor_patches_structure": 24,
+        "linear_hidden_dim_1": 256,
+        "linear_hidden_dim_2": 256,
+        "node_embed_size": 64,
+        "lstm_dropout": 0.4,
+        "lstm_n_layers": 3,
+        "lin_dropout": 0.4,
+        "cc_aggregator": "sum",
+        "use_aml_edge_features": true
+    },
+    "hyperparams_optuna": {}
+}

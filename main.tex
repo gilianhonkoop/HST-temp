@@ -1,245 +1,380 @@
-\documentclass[12pt, twocolumn]{report} % or article
+\documentclass[12pt, twocolumn]{report}
 
-\usepackage{graphicx, color}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage[a4paper,margin=2cm]{geometry}
+\usepackage{graphicx}
 \usepackage{natbib}
-\newcommand{\red}[1]{{\color{red}{#1}}}
 \usepackage{stfloats}
 \usepackage{array}
-\usepackage{xcolor}
 \usepackage[dvipsnames]{xcolor}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{url}
+\usepackage{hyperref}
+\newcommand{\red}[1]{{\color{red}{#1}}}
+
 \begin{document}
 
 \begin{titlepage}
-
-
-\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
-
-\center % Center everything on the page
-
- 
-
-%----------------------------------------------------------------------------------------
-
-%	HEADING SECTIONS
-
-%----------------------------------------------------------------------------------------
-
-
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\center
 \textsc{\Large MSc Artificial Intelligence}\\[0.2cm]
-
-
-
-%----------------------------------------------------------------------------------------
-
-%	TITLE SECTION
-
-%----------------------------------------------------------------------------------------
-
-
-
 \HRule \\[0.4cm]
-
-{ \huge \bfseries Fraud detection using hierarchical subgraph-transformers on multigraphs}\\[0.4cm] % Title of your document
-
+{ \huge \bfseries Fraud detection using hierarchical subgraph-transformers on multigraphs}\\[0.4cm]
 \HRule \\[0.5cm]
-
- 
-
-%----------------------------------------------------------------------------------------
-
-%	AUTHOR SECTION
-
-%----------------------------------------------------------------------------------------
-
-
-
 by\\[0.2cm]
-
-\textsc{\Large Gilian Honkoop}\\[0.2cm] %you name
-
+\textsc{\Large Gilian Honkoop}\\[0.2cm]
 13710729\\[1cm]
-
-
-
-
-
-%----------------------------------------------------------------------------------------
-
-%	DATE SECTION
-
-%----------------------------------------------------------------------------------------
-
-
-
-{\Large \today}\\[1cm] % Date, change the \today to a set date if you want to be precise
-
-
-
-36EC\\ %
-
-Jan - Jun 2026\\[1cm]%
-
-
-
-%----------------------------------------------------------------------------------------
-
-%	COMMITTEE SECTION
-
-%----------------------------------------------------------------------------------------
+{\Large \today}\\[1cm]
+36EC\\
+Jan -- Jun 2026\\[1cm]
 
 \begin{minipage}[t]{0.4\textwidth}
-
 \begin{flushleft} \large
-
 \emph{Supervisor:} \\
-
-F. Gholamzadeh Nasrabadi 
-
+F. Gholamzadeh Nasrabadi
 \end{flushleft}
-
 \end{minipage}
-
 ~
-
 \begin{minipage}[t]{0.4\textwidth}
-
 \begin{flushright} \large
-
 \emph{Examiner:} \\
-
 TBD\\
-
 \vspace{0.5cm}
-
 \emph{Second reader:} \\
-
 F. Gholamzadeh Nasrabadi \\
-
 \end{flushright}
-
 \end{minipage}\\[2cm]
 
-
-
-%----------------------------------------------------------------------------------------
-
-%	LOGO SECTION
-
-%----------------------------------------------------------------------------------------
-
-
-
-
-\includegraphics[width=10cm]{uvalogo_regular_p_nl.eps}
-
- 
-
-%----------------------------------------------------------------------------------------
-
-
-
-\vfill % Fill the rest of the page with whitespace
-
+\IfFileExists{uvalogo_regular_p_nl.pdf}{\includegraphics[width=10cm]{uvalogo_regular_p_nl.pdf}}{\IfFileExists{uvalogo_regular_p_nl.eps}{\includegraphics[width=10cm]{uvalogo_regular_p_nl.eps}}{\fbox{\parbox{8cm}{\centering University logo placeholder}}}}
+\vfill
 \end{titlepage}
 
 \pagenumbering{roman}
-
-% \tableofcontents
+\tableofcontents
 
 \begin{abstract}
-\red{Provide a short overview and description of your thesis here.}
+Money laundering is often expressed through coordinated sequences of transactions involving multiple accounts rather than through isolated anomalous transactions. This thesis studies subgraph-level anti-money-laundering detection on large directed transaction multigraphs. I introduce the Hierarchical Subgraph Transformer (HST), a two-stage architecture that first summarizes candidate account subgraphs into a supergraph and then performs edge-aware graph-transformer classification on the resulting subgraph nodes. 
+
+TODO 
 \end{abstract}
 
 \pagenumbering{arabic}
 
-\section*{1. Introduction}
-% \addcontentsline{toc}{section}{Introduction}
+\chapter{Introduction}
 
 With a large part of financial transactions happening online, fraud detection has become an important part of many financial systems. Money laundering has proven to be especially challenging, as it involves complex transaction pipelines with  structured multi-step patterns rather than individual anomalies. This includes groups of accounts and transactions rather than single entities. As modern fraud is constantly evolving and financial datasets are generally large, older rule-based systems and manual audits have suffered in their effectiveness. 
 
-As financial transactions can naturally be modeled as graphs, graph based machine learning (ML) methods have become popular for detecting different types of fraud. Traditional message-passing graph neural networks (GNNs) have been shown to be effective in learning graph-structured data. However, these GNNs typically only capture local neighborhood information, instead of higher-order structural motifs that are inherent to modern money laundering schemes.
+As financial transactions can naturally be modeled as graphs, graph based machine learning (ML) methods have become popular for detecting different types of fraud. Traditional message-passing graph neural networks (GNNs) have been shown to be effective in learning graph-structured data, \cite{kipf2017semi,hamilton2017inductive,velivckovic2018gat}. However, these GNNs typically only capture local neighborhood information, instead of higher-order structural motifs that are inherent to modern money laundering schemes.
 
-Recent advances like FraudGT \cite{fraudgt2024} have introduced Graph Transformers to leverage edge-based features and attention mechanisms to increase model expressivity. This allows the model to learn complex structures while maintaining computational efficiency, as is required for large financial datasets. However, Graph Transformers operate primarily on a flat graph structure with node-wise representations. As money laundering involves complex multi-node schemes, it can be useful to detect multi-node money laundering clusters. The Hierarchical Scalable Graph Transformer (HSGT) \cite{zhu2023hierarchicaltransformerscalablegraph} coarsens the graph into multiple hierarchy layers. This allows for transformers in later blocks to incorporate information from multiple hierarchy-levels, effectively increasing the receptive field op each node. However, the current architecture is not adapted for directed multi-relational edges. In addition, coarsening and performing attention over multiple hierarchy layers is computationally expensive. 
+Recent advances like FraudGT \cite{fraudgt2024} have introduced Graph Transformers to leverage edge-based features and attention mechanisms to increase model expressivity. This allows the model to learn complex structures while maintaining computational efficiency, as is required for large financial datasets. However, Graph Transformers operate primarily on a flat graph structure with node-level representations. As money laundering involves complex multi-node schemes, it can be useful to detect multi-node money laundering clusters. The Hierarchical Scalable Graph Transformer (HSGT) \cite{zhu2023hierarchicaltransformerscalablegraph} coarsens the graph into multiple hierarchy layers. This allows for transformers in later blocks to incorporate information from multiple hierarchy-levels, effectively increasing the receptive field op each node. However, the current architecture is not adapted for directed multi-relational edges. In addition, coarsening and performing attention over multiple hierarchy layers is computationally expensive. 
 
 Subgraph representation learning has also shown success in different subgraph-level tasks, as it can more easily incorporate topological information into the model. However, existing subgraph methods often suffer from high computational costs \cite{kim2024translating} or a lack of integration with the global attention mechanisms found in Transformers \cite{subgraphormer2024}. Subgraph-To-Node (S2N) \cite{kim2024translating} demonstrated that coarsening subgraphs into single nodes can significantly improve computational efficiency. However, S2N is not directly applicable to fraud detection as financial graphs are directed multigraphs and also contain edge-features, whereas S2N uses undirected simple graphs.
 
-\bigskip
-\noindent To address previous limitations, we propose a novel Hierarchical Subgraph Transformer (HST). This dual-layered architecture first coarsens subgraphs from the dataset into individual nodes using graph transformers (GTs). This layer utilizes multi-relational attention using transaction based edge features along with node features to accurately summarize a subgraph into a single super-node, reducing computational complexity in subsequent steps. The second layer applies a modified FraudGT framework on the coarsened super-nodes. In this second layer, global positional encodings (GPEs) will be added to enrich subgraph representations with positional information. This dual-step approach results in a 2-layer hierarchy of GTs to obtain subgraph-level representations and predictions.
+To address previous limitations, we propose a novel Hierarchical Subgraph Transformer (HST) for subgraph-level money laundering detection. HST introduces a dual-layered architecture that first coarsens candidate account subgraphs into individual "super-nodes," forming a simplified global supergraph. This first layer utilizes multi-relational attention—incorporating transaction-based edge features alongside node features—to accurately summarize each subgraph while drastically reducing downstream computational complexity. The second layer then applies a modified FraudGT framework to these coarsened super-nodes, enriching the subgraph representations with Global Positional Encodings (GPEs) to capture global structural context for final classification.
 
-In summary, the contributions this research aims at are threefold:
+TODO: small summary of results
+
+The main contributions of this research are:
 \begin{enumerate}
-    \item A novel Hierarchical Subgraph Transformer architecture combining subgraph representation learning with graph transformers, capable of incorporating multi-graph edge features.
+    \item A hierarchical architecture for subgraph-level fraud detection on directed transaction multigraphs with node and edge features;
     \item Evaluation on various large-scale publicly available financial datasets and comparison with other state-of-the-art methods.
-    \item maybe more?
+     \item A reproducible dataset construction pipeline that converts transaction datasets into subgraph-level datasets.
 \end{enumerate}
 
-\section*{2. Related work}
+\chapter{Related works}
 
-GNNs have become the most common paradigm for relational fraud detection. Spectral approaches such as Graph Convolutional Networks (GCNs) \cite{kipf2017semi} and spatial message-passing models such as GraphSAGE \cite{hamilton2017inductive} and Graph Attention Networks (GAT) \cite{velivckovic2018gat} have demonstrated strong performance on node classification tasks. Other works explicitly target fraud scenarios, including CARE-GNN \cite{dou2020enhancing}, which addresses class imbalance and camouflage behavior. 
+\section{AML transaction monitoring and synthetic AML benchmarks}
 
-Despite their success, traditional message-passing GNNs primarily aggregate information from local neighborhoods. This locality bias can limit their ability to capture higher-order structural patterns characteristic of organized fraud and money laundering schemes.
+AML detection differs from many other fraud-detection problems because the suspicious activity can be deliberately distributed over many accounts and transactions. Rule-based systems are still common in practice, but they often produce many false positives and require frequent manual maintenance when laundering strategies change. Graph-based learning provides an alternative by modelling the relational structure between accounts directly.
 
-\bigskip
-\noindent Graph Transformers (GTs) have recently been proposed to integrate global attention mechanisms with graph-structured data. This tries overcome the locality limitations of standard GNNs. Inspired by the Transformer architecture \cite{vaswani2017attention}, models such as Graphormer \cite{ying2021graphormer}, SAN \cite{kreuzer2021rethinking} and GPS \cite{rampasek2022recipe} incorporate structural encodings to make self-attention aware of graph topology.
+A practical obstacle for AML research is the lack of public, labelled financial data. The IBM AML datasets were introduced to address this gap with a calibrated agent-based transaction generator and public synthetic transaction networks with complete ground-truth labels \cite{altman2024realistic}. The data is released in high-illicit and low-illicit variants and ranges from millions to hundreds of millions of transactions. SAML-D is another public synthetic AML dataset, designed as a transaction-monitoring benchmark with a large number of transaction features, typologies and network structures \cite{oztas2023enhancing,oztas2024samldkaggle}. These datasets make it possible to evaluate graph models on realistic-scale AML-like networks while avoiding privacy constraints of real bank data.
 
-FraudGT \cite{fraudgt2024} incorporates edge-aware attention and structural encodings such as port numbering and ego identifiers to better capture transactional patterns in financial multigraphs with GTs. These approaches demonstrate improved expressivity compared to traditional message-passing GNNs, particularly in dense or heterogeneous transaction networks.
+\section{Graph neural networks for fraud detection}
 
-However, most Graph Transformers operate at the node level and assume a flat graph structure. They do not explicitly model subgraph-level representations, which are crucial for detecting coordinated multi-account fraud schemes. HSGT \cite{zhu2023hierarchicaltransformerscalablegraph} made initial steps to overcome this limitation, by coarsening graphs into multiple hierarchies before using multi-layer self-attention. While good good node-level tasks, it is not efficient for subgraph-level tasks as it involves redundant steps. Moreover, it was not designed for financial datasets and multi-graphs.
+Classical GNNs learn node representations by recursively aggregating information from neighbouring nodes and edges. GCN \cite{kipf2017semi}, GraphSAGE \cite{hamilton2017inductive} and GAT \cite{velivckovic2018gat} are common examples. Fraud-specific methods add mechanisms for class imbalance, camouflage behaviour or heterogeneous relations. CARE-GNN, for example, explicitly addresses camouflaged fraudsters and imbalanced fraud labels \cite{dou2020enhancing}. These methods are useful for node-level fraud detection, but AML patterns often require reasoning over groups of accounts and edge sequences.
 
-\bigskip
-\noindent Subgraph-level learning has recently gained attention as many graph tasks require reasoning over motifs, communities, or localized regions rather than individual nodes. SEAL \cite{zhang2018link} introduced subgraph extraction for link prediction, while Graph Substructure Networks \cite{bouritsas2022improving} improve model expressivity through predefined structural motifs.
+Principal Neighbourhood Aggregation (PNA) extends standard message passing by combining several aggregation functions, such as mean, maximum, minimum and standard deviation, with degree-dependent scaling functions \cite{corso2020pna}. This design is motivated by the observation that different aggregation statistics capture different aspects of a neighbourhood distribution, while degree scalers help representations remain informative across sparse and dense regions of a graph. PNA is therefore a relevant baseline for transaction graphs, where account degrees can vary substantially and where both average behaviour and extreme transaction patterns may be informative.
 
-More recent work focuses on directly learning subgraph representations. Subgraphormer \cite{subgraphormer2024} extends Transformer architectures to subgraph-level tasks, and SUN \cite{franca2022subgraph} learns permutation-invariant subgraph embeddings. However, these approaches typically incur high computational costs due to repeated subgraph extraction and encoding, limiting scalability on large financial transaction graphs \cite{kim2024translating}.
+Graph transformers extend the transformer architecture \cite{vaswani2017attention} to graph data. Models such as Graphormer, SAN and GPS incorporate positional or structural encodings so that attention can use graph topology \cite{ying2021graphormer,kreuzer2021rethinking,rampasek2022recipe}. FraudGT adapts this idea to financial multigraphs by using edge features both as attention bias and as a message gate \cite{fraudgt2024}. This is particularly relevant for transaction data, where amount, time, currency and payment format can be as important as the existence of an edge.
 
-To address this issue, Subgraph-To-Node (S2N) \cite{kim2024translating} proposes an algorithm for translating subgraphs into a single node, enabling efficient hierarchical reasoning while preserving structural information. Similarly, \citep{2017supernode} proposed a method in which all nodes in a subgraph are artificially connected to a virtual-node to obtain a single representation of the subgraph. However, both methods do not utilize attention to obtain the representation of the super-node.
+\section{Subgraph representation learning}
 
-\section*{3. Method}
-method + figures
+Subgraph representation learning studies tasks where the prediction target is a set of nodes or an induced region. Earlier work uses enclosing subgraphs for link prediction, such as SEAL \cite{zhang2018link}, or improves expressivity through substructure counting \cite{bouritsas2022improving}. More recent methods directly learn representations for queried subgraphs, for example SUN \cite{franca2022subgraph} and Subgraphormer \cite{subgraphormer2024}. These methods are expressive, but repeated subgraph encoding can be expensive when the number of labelled subgraphs is large.
 
-\section*{4. Datasets}
+Subgraph-to-node approaches reduce this cost by translating each subgraph into a single node. S2N shows that subgraph-level tasks can be transformed into node-level tasks on a coarsened graph, enabling the use of simple and efficient GNNs \cite{kim2024translating}. Similarly, \citep{2017supernode} proposed a method in which all nodes in a subgraph are artificially connected to a virtual-node to obtain a single representation of the subgraph. GLASS uses labeling tricks to provide strong subgraph representations \cite{glass2022}. However, these approaches are not directly designed for directed transaction multigraphs with rich edge attributes. 
 
-\section*{5. Experiments}
+This thesis adapts the subgraph-to-node principle to AML by explicitly aggregating node features, edge features and inter-subgraph transaction structure.
 
-\bigskip
-\noindent \textbf{Baselines: }
-For comparison, other subgraph level methods will be used. These are S2N, GLASS \cite{glass2022} and a Principal Neighbourhood Aggregation (PNA) method, adapted from \citep{corso2020pna}. As S2N and GLASS work for undirected simple graphs, modifications must be made before they can be used on the AML and SAML-D datasets. PNA is adapted for both subgraph-level in the first HST layer, and for node-level in the second HST layer.
+\section{Hierarchical graph learning and positional encodings}
 
-\bigskip
-\noindent \textbf{Evaluation: }
-The main evaluation metrics for qualitative model comparison will be the F1 score of the minor class. PR-AUC and ROC-AUC scores will also be used.
+Hierarchical graph learning constructs representations at multiple resolutions. HSGT coarsens graphs into hierarchies before applying transformer layers, improving the receptive field of node representations \cite{zhu2023hierarchicaltransformerscalablegraph}. Virtual-node approaches similarly introduce a learned global readout node connected to all nodes in a graph or subgraph \cite{2017supernode}. HST uses a fixed two-level hierarchy: original account nodes and transactions are summarized into subgraph nodes, after which a second-level model reasons over relations between those subgraphs.
 
-\section*{6. Results}
+Positional encodings are important for graph transformers because attention alone is permutation-invariant and does not know graph structure unless it is encoded. In HST, random PEARL positional encodings provide supernodes with structural information by propagating random node signals through the graph and pooling the resulting samples into permutation-equivariant encodings \cite{pearlencodings}. These encodings are fused into the second-level backbone before classification.
 
-\begin{table*}[t] % h for Here, t for Top, b for Bottom
+\chapter{Methods}
+\label{chap:methods}
+
+\section{Problem setting}
+
+Let $G=(V,E)$ be a directed transaction multigraph. A node $v\in V$ represents an account, customer or account-bank pair. A directed edge $e=(u,v)\in E$ represents a transaction from sender $u$ to receiver $v$ and has an edge-feature vector $a_e$, such as timestamp, amount, currency and payment type. The dataset provides a collection of candidate subgraphs $\mathcal{C}=\{C_1,\ldots,C_S\}$, where each $C_s\subseteq V$ is a set of accounts and has a binary label $y_s\in\{0,1\}$ indicating whether the component is licit or illicit. The task is to predict $y_s$ for held-out subgraphs.
+
+The core design choice in HST is to transform this subgraph classification problem into node classification on a derived supergraph. Each candidate subgraph becomes one supernode. Edges between supernodes summarize the original transactions whose endpoints belong to the corresponding account sets. The final classifier predicts one logit per supernode.
+
+\section{Architecture overview}
+
+Figure~\ref{fig:hst-overview} shows the high-level pipeline. HST constructs a two-level representation of the transaction graph. At the lower level, the model operates on account-level transaction data and summarizes each candidate component into a supernode. At the higher level, it applies a graph model to the supergraph of candidate components, allowing the prediction for one component to depend not only on its internal structure but also on its transaction-level relation to other components.
+
+\begin{figure*}[t]
     \centering
-    \caption{Benchmark results of F1 scores of various subgraph methods. Mean and standard deviation is calculated over 5 runs with different seeds. The best mean result is \textcolor{OliveGreen}{highlighted}.}
-    \vspace{0.2cm}
-    \begin{tabular}{>{\footnotesize}l >{\footnotesize}c >{\footnotesize}c >{\footnotesize}c >{\footnotesize}c >{\footnotesize}c >{\footnotesize}c}
+    \caption{Hierarchical Subgraph Transformer architecture.}
+    \label{fig:hst-overview}
+\end{figure*}
+
+The architecture separates two modeling questions. The first is how an account subgraph should be represented as a single object without discarding important internal transaction information. The second is how these subgraph objects should interact once they are placed in a larger supergraph. HST addresses the first question through configurable node and edge summarization functions, and addresses the second through an edge-aware graph backbone with structural positional encodings.
+
+\section{Subgraph-to-supergraph construction}
+
+The supergraph construction is based on a binary membership matrix $M\in\{0,1\}^{S\times |V|}$, where
+\begin{equation}
+    M_{s,v} = 1 \quad \text{iff node } v \text{ belongs to subgraph } C_s .
+\end{equation}
+Given an adjacency representation $A$ of the transaction graph, the induced supergraph adjacency is computed conceptually as
+\begin{equation}
+    A^{(S)} = M A M^\top .
+\end{equation}
+Thus, a super-edge $(i,j)$ exists when at least one original transaction connects an account in $C_i$ to an account in $C_j$. The same construction also provides a natural way to aggregate transaction features for each super-edge. Instead of only recording whether two subgraphs are connected, HST summarizes the transactions between them, preserving information about temporal position, amount and payment attributes.
+
+This transformation changes the unit of prediction from accounts to candidate laundering components. The resulting graph $G^{(S)}=(V^{(S)},E^{(S)})$ contains one node for each candidate subgraph, super-edge attributes derived from original transactions, and one binary label per supernode. The construction is deterministic given the candidate subgraphs and the original transaction graph, which makes the evaluation protocol reproducible and avoids sampling variation during model training.
+
+\section{Subgraph node summarization}
+
+HST compares several design choices for representing the accounts inside a candidate subgraph. The simplest summaries use permutation-invariant pooling over account features, such as the mean or maximum. A richer statistical summary concatenates moments and extrema of each account feature. These summaries are non-parametric and inexpensive, but they assume that all accounts in a component contribute equally to the representation.
+
+Attention-based summarization relaxes this assumption by learning a weight for each account inside the candidate subgraph. The attention score is based on projected account features and local transaction context, after which the supernode is formed as a weighted combination of account embeddings. This design is motivated by the fact that laundering components may contain peripheral accounts that are less informative than bridge accounts, hubs or accounts that participate in characteristic transaction patterns.
+
+The virtual-node variant treats subgraph summarization as a local readout problem. A learned readout node is connected to all accounts in the candidate subgraph, and message passing is applied over the original local edges together with the readout edges. The embedding of the readout node then represents the whole candidate component. This design is more expressive than fixed pooling because it lets the representation depend on interactions between internal account structure and transaction attributes before the final subgraph embedding is extracted.
+
+\section{Super-edge summarization}
+
+Super-edge attributes summarize the original transactions between pairs of candidate subgraphs. A mean summary captures the average transaction profile between two components. A statistical summary additionally includes extrema and dispersion, which is useful when a few unusually large or temporally distinctive transactions are more informative than the average transaction. The attention-statistics variant further assigns transaction-level importance weights before computing weighted means, weighted standard deviations, smooth maxima and structural counts.
+
+These alternatives represent a trade-off between robustness, expressivity and computational cost. Mean aggregation is stable and simple, but may hide rare suspicious transfers. Statistical aggregation preserves more information while remaining non-parametric. Attention-statistics aggregation is the most flexible, since it can emphasize transactions that are more relevant to the downstream AML objective.
+
+\section{Supergraph classification}
+
+After summarization, HST applies node classification on the supergraph. Two second-level backbones are considered. The FraudGT-style backbone uses edge-aware attention: super-edge attributes influence the attention score between neighbouring supernodes and also gate the transmitted message. This is well aligned with financial transaction data, where edge attributes often carry the most direct evidence of suspicious behaviour.
+
+The PNA backbone instead uses Principal Neighbourhood Aggregation. It combines several neighbourhood statistics with degree-dependent scalers, allowing the representation of a supernode to capture different distributions of neighbouring components. In the HST setting, this provides a strong message-passing alternative to edge-aware attention and tests whether the main benefit comes from hierarchical summarization or from the transformer-style second-level model.
+
+Before applying the second-level backbone, HST augments supernode features with random PEARL positional encodings. These encodings provide structural information about the position of each supernode in the supergraph. A final two-layer multilayer perceptron maps the resulting supernode embedding to a binary logit for licit or illicit classification.
+
+\section{Temporal evaluation protocol}
+
+AML detection is intrinsically temporal: a model should not be trained on labels from the future when evaluating later suspicious activity. Therefore, candidate subgraphs are ordered by their component start time and split into training, validation and test partitions. Training uses only training subgraphs. Validation constructs the supergraph from training and validation subgraphs but evaluates only validation labels. Testing constructs the supergraph from training, validation and test subgraphs but evaluates only test labels. This cumulative method reflects the realistic assumption that historical graph structure is available when later components are scored, while future labels are not used for training.
+
+\chapter{Datasets}
+\label{chap:datasets}
+
+This research uses synthetic transaction-based money-laundering datasets. However, these datasets contain edge-level money-laundering labels, whereas the learning problem here is subgraph-level classification. This chapter describes the dataset transformations from edge-level to subgraph-level.
+
+\section{IBM AML datasets}
+
+The IBM AML benchmark consists of synthetic financial transaction networks generated by a calibrated agent-based simulator \cite{altman2024realistic}. Accounts are represented as nodes and transactions as directed edges. The public release contains high-illicit (HI) and low-illicit (LI) variants at different scales. Table~\ref{tab:ibm-original-stats} summarizes the original node/edge-level datasets reported by the dataset authors. For this research the Small and Medium variants are used, as they are already large enough to stress subgraph construction and training, while still allowing hyperparameter search and repeated experiments across seeds.
+
+\begin{table*}[t]
+    \centering
+    \caption{Original transaction datasets. ``Rate'' is the reported number of transactions per laundering transaction.}
+    \label{tab:ibm-original-stats}
+    \footnotesize
+    \begin{tabular}{lrrrrrrr}
         \hline
-        {Method} & AML HI-Small & AML LI-Small & AML HI-Medium & AML LI-Medium & SAML-D \\
-        \hline\\[-2.3ex] 
-        % SubGNN & $\pm$ & $\pm$ & $\pm$ & $\pm$ &  $\pm$ \\
-        S2N & 0.1733 $\pm$ 0.0334 & 0.1892 $\pm$ 0.0104 & 0.3181 $\pm$ 0.0218 & 0.2482 $\pm$ 0.0171 & 0.4282 $\pm$ 0.2095 \\
-        GLASS & 0.3763 $\pm$ 0.0029 & 0.3601 $\pm$ 0.0023 & 0.3194 $\pm$ 0.0091 & 0.2922 $\pm$ 0.0029 & 0.6899 $\pm$ 0.0158 \\
-        PNA & 0.4586 $\pm$ 0.0115 & 0.4280 $\pm$ 0.0078 & 0.5477 $\pm$ 0.0135 & \textcolor{OliveGreen}{0.4813 $\pm$ 0.0058} & \textcolor{OliveGreen}{0.907 $\pm$ 0.0183} \\
-        \hline\\[-2.3ex] 
-        HST$_{FraudGT}$ & 0.4174 $\pm$ 0.1414 & 0.2446 $\pm$ 0.0424 & 0.3696 $\pm$ 0.1365 & 0.3406 $\pm$ 0.1064 & 0.4846 $\pm$ 0.0608 \\
-        \quad +att\_aggr & \textcolor{OliveGreen}{0.5188 $\pm$ 0.0354} & \textcolor{OliveGreen}{0.4446 $\pm$ 0.0863} & \textcolor{OliveGreen}{0.6411 $\pm$ 0.0099} & 0.4457 $\pm$ 0.1661 & 0.6496 $\pm$ 0.0294 \\
-        HST$_{PNA}$ & 0.5310 $\pm$ 0.0758 & 0.3404 $\pm$ 0.2088 & 0.6168 $\pm$ 0.2628 & 0.5287 $\pm$ 0.2192 & 0.6826 $\pm$ 0.1498 \\
-        \quad +att\_aggr &  $\pm$  &  $\pm$  &  $\pm$  &  $\pm$  & 0.8720 $\pm$ 0.0652 \\
+        Dataset & Days & Accounts & Transactions & Laundering tx. & Rate & Node features  & Edge features \\
+        \hline
+        HI-Small  & 10 & 515K   & 5M   & 5.1K & 1/981 & 4 & 9 \\
+        LI-Small  & 10 & 705K   & 7M   & 4.0K & 1/1942 & 4 & 9 \\
+        HI-Medium & 16 & 2,077K & 32M  & 35K  & 1/905 & 4 & 9 \\
+        LI-Medium & 16 & 2,028K & 31M  & 16K  & 1/1948 & 4 & 9 \\
+        SAML-D & 1 & 749K & 9.4M & 11.6K & 1/806 & 0 & 12 \\
+        \hline
     \end{tabular}
 \end{table*}
 
-\section*{7. Discussion}
-\subsection*{Future work}
+Node features contain outgoing transaction count, incoming transaction count, outgoing paid amount sum and incoming received amount sum. Edge features contain relative timestamp, amount received, receiving currency ID, payment format ID, amount paid and payment currency ID. Continuous features are z-score normalized when normalization is enabled, while categorical IDs are kept as integer identifiers.
 
-\section*{Conclusion}
+\section{SAML-D dataset}
+
+SAML-D is a synthetic transaction-monitoring dataset for AML research \cite{oztas2023enhancing,oztas2024samldkaggle}. It contains 9,504,852 transactions and a suspicious-transaction rate of approximately 0.1039\%. Transaciton features include transaction time and date, sender and receiver account IDs, amount, payment type, sender and receiver bank locations, payment and received currencies, a suspicious flag, and a transaction type. 
+
+Unlike the IBM AML data, SAML-D does not provide separate account metadata. Therefore, the default subgraph dataset construction has no node features for SAML-D and keeps all information on edges. The construction activity-derived node features would use full-dataset activity aggregates that could leak future information. Therefore, no artificial node features are added.
+
+\section{Subgraph-level dataset construction}
+
+Both IBM AML and SAML-D are converted to the local subgraph-level format used by HST. The construction pipeline uses the following steps:
+\begin{enumerate}
+    \item Identify illicit accounts. An account is considered illicit if it appears in at least one laundering transaction in the original data.
+    \item Build an illicit-only graph from transactions whose endpoints are both illicit. Illicit subgraphs are connected components of this graph. Known laundering-patterns in the IBM AML data are used to form illicit subgraphs before residual illicit nodes are componentized.
+    \item Build a licit-only graph from transactions whose endpoints are both licit. Licit subgraphs are sampled as connected sets from this graph. Their target sizes are sampled from the illicit subgraph size distribution to ensure roughly similar sizes.
+    \item Split oversized components into connected BFS chunks when a maximum component size is configured.
+    \item Keep only nodes that belong to retained subgraphs and all the transaction edges between retained nodes.
+    \item Remove singleton subgraphs from the dataset.
+\end{enumerate}
+
+\begin{table*}[t]
+    \centering
+    \caption{Derived subgraph-level datasets.}
+    \label{tab:derived-dataset-stats}
+    \footnotesize
+    \begin{tabular}{lrrrrrrr}
+        \hline
+        Dataset & Nodes & Edges & Subgraphs & Illicit & Licit & Size avg./med. \\
+        \hline
+        HI-Small  & 118,659 & 1,149,343 & 32,696 & 31,334 & 1362 & 4.66/2 illicit; 3.58/2 licit \\
+        LI-Small & 117,241 & 728,655 & 37,541 & 36,016 & 1525 & 3.47/2 illicit; 3.11/2 licit \\
+        HI-Medium & 636,683 & 9,321,123 & 171,106 & 161,877 & 9229 & 4.21/2 illicit; 3.69/2 licit \\
+        LI-Medium & 416,532 & 5,116,331 & 141,411 & 134,254 & 7157 & 3.15/2 illicit; 2.93/2 licit \\
+        SAML-D & 156,955 & 1,536,435 & 22,256 & 856 & 21,400 & 9.23/8 illicit; 6.97/5 licit \\
+        \hline
+    \end{tabular}
+\end{table*}
+
+Table~\ref{tab:derived-dataset-stats} summarizes the derived subgraph-level datasets used in the experiments. These datasets were built without singleton subgraphs, with z-score normalization enabled, a licit sampling ratio of 25, hybrid BFS/DFS licit sampling probability 0.5, seed 42 and maximum component size 500. These settings produce many more licit than illicit subgraphs, reflecting the rarity of suspicious activity while still supplying enough positive examples for evaluation.
+
+
+\chapter{Experiments}
+\label{chap:experiments}
+
+\section{Experimental setup}
+
+This section describes the experiments to evaluate the performance of the HST compared to other baseline methods. Ablation tests also compare different node-level prediction methods in the 2nd HST layer, as well ass different aggregation methods in the first layer.
+
+\subsection{Models}
+The proposed models are HST$_{FraudGT}$ and HST$_{PNA}$. Both construct the same subgraph-level supergraph, but they apply different second-level models. Both these models are tried with a base aggregation method which uses statistical node and edge aggregators. Additionally, an attention-based aggregation methods is tried where the virtual node aggregator and the attention-stats edge aggregator is used.
+
+\subsection{Baselines}
+THe HST methods are compared with SubGNN \cite{subgnn2020}, GLASS, S2N and a PNA method. Since these methods are originally not tailored to directed transaction multigraphs with rich edge attributes, these methods had to be slightly modified before they could be applied. \\
+
+\noindent
+\textbf{SubGNN} adaptation \\
+
+\noindent
+\textbf{S2N} adaptation \\
+
+\noindent
+\textbf{GLASS} adaptation \\
+
+\noindent
+\textbf{PNA} adaptation \\
+
+\section{Training setup}
+
+Each dataset is split temporally into training, validation and test partitions using a 60-20-20 ratio. Validation is performed on validation components in the cumulative train-plus-validation supergraph, and testing is performed on test components in the cumulative train-plus-validation-plus-test supergraph. This design evaluates future components while still allowing the graph context that would have been historically observable at the evaluation time.
+
+Models are trained with binary cross-entropy with logits. Class imbalance is addressed by weighting errors of the minor class more heavily. This prevents the model from predicting everything as licit. Optimization uses AdamW with separate learning rates for the summarization models and the supergraph classifier model. 
+
+The primary evaluation metric is the F1 score of the illicit class. This is more informative than accuracy because the datasets are highly imbalanced and a high-accuracy model could still miss most suspicious components. PR-AUC is used as a threshold-independent metric for the rare illicit class. After training, the epoch with the best PR-AUC score on the validation set is selected. The corresponding model weights are used to find an optimal prediction threshold based on the illicit F1 score on the validation set. This final threshold is subsequently used for testing.
+
+Optuna hyperparameter search is used to find ideal configurations, after which the best configuration is evaluated across multiple random seeds. The exact search ranges and selected values are reported in Table~\ref{tab:hyperparams}. Hyperparameter search is performed on the test and validation sets. The configuration that achieved the best validation results, as measured by illicit PR-AUC, is then used to perform multiple runs with different seeds.
+
+
+\chapter{Results}
+
+\begin{table*}[t]
+    \centering
+    \caption{Benchmark results of illicit-class F1 scores of various subgraph methods. Mean and standard deviation are calculated over 5 seeds. The best mean result per dataset is \textcolor{OliveGreen}{highlighted}.}
+    \vspace{0.2cm}
+    \begin{tabular}{>{\footnotesize}l >{\footnotesize}c >{\footnotesize}c >{\footnotesize}c >{\footnotesize}c >{\footnotesize}c}
+        \hline
+        {Method} & AML HI-Small & AML LI-Small & AML HI-Medium & AML LI-Medium & SAML-D \\
+        \hline\\[-2.3ex]
+        SubGNN 0 $\pm$ 0 & 0 $\pm$ 0 & 0 $\pm$ 0 & OOM & OOM & 0.9104 $\pm$ 0.0159 \\
+        S2N & 0.1733 $\pm$ 0.0334 & 0.1892 $\pm$ 0.0104 & 0.3181 $\pm$ 0.0218 & 0.2482 $\pm$ 0.0171 & 0.4282 $\pm$ 0.2095 \\
+        GLASS & 0.3763 $\pm$ 0.0029 & 0.3601 $\pm$ 0.0023 & 0.3194 $\pm$ 0.0091 & 0.2922 $\pm$ 0.0029 & 0.6899 $\pm$ 0.0158 \\
+        PNA & 0.4586 $\pm$ 0.0115 & 0.4280 $\pm$ 0.0078 & 0.5477 $\pm$ 0.0135 & {0.4813 $\pm$ 0.0058} & \textcolor{OliveGreen}{0.9271 $\pm$ 0.0183} \\
+        \hline\\[-2.3ex]
+        HST$_{FraudGT}$ & 0.4174 $\pm$ 0.1414 & 0.2446 $\pm$ 0.0424 & 0.3696 $\pm$ 0.1365 & 0.3406 $\pm$ 0.1064 & 0.4846 $\pm$ 0.0608 \\
+        \quad +att\_aggr & {0.5188 $\pm$ 0.0354} & \textcolor{OliveGreen}{0.4446 $\pm$ 0.0863} & \textcolor{OliveGreen}{0.6411 $\pm$ 0.0099} & 0.4457 $\pm$ 0.1661 & 0.6496 $\pm$ 0.0294 \\
+        HST$_{PNA}$ & \textcolor{OliveGreen}{0.5310 $\pm$ 0.0758} & 0.3404 $\pm$ 0.2088 & 0.6168 $\pm$ 0.2628 & \textcolor{OliveGreen}{0.5287 $\pm$ 0.2192} & 0.6826 $\pm$ 0.1498 \\
+        \quad +att\_aggr & $\pm$ & $\pm$ & $\pm$ & $\pm$ & 0.8720 $\pm$ 0.0652 \\
+        \hline
+    \end{tabular}
+    \label{tab:main-results}
+\end{table*}
+
+\begin{table*}[t]
+    \centering
+    \caption{Benchmark results of illicit-class PR-AUC scores of various subgraph methods. Mean and standard deviation are calculated over 5 seeds. The best mean result per dataset is \textcolor{OliveGreen}{highlighted}.}
+    \vspace{0.2cm}
+
+    \begin{tabular}{>{\footnotesize}l >{\footnotesize}c >{\footnotesize}c >{\footnotesize}c >{\footnotesize}c >{\footnotesize}c}
+        \hline
+        {Method} & AML HI-Small & AML LI-Small & AML HI-Medium & AML LI-Medium & SAML-D \\
+        \hline\\[-2.3ex]
+        SubGNN & $\pm$ & $\pm$ & $\pm$ & $\pm$ & $\pm$ \\
+        S2N & 0.1352 $\pm$ 0.0056 & 0.1162 $\pm$ 0.0077 & 0.2598 $\pm$ 0.0244 & 0.1818 $\pm$ 0.0129 & 0.3842 $\pm$ 0.0438 \\
+        GLASS & 0.2715 $\pm$ 0.0435 & 0.2722 $\pm$ 0.0075 & 0.4453 $\pm$ 0.0135 & 0.3873 $\pm$ 0.0091 & 0.7225 $\pm$ 0.0347 \\
+        PNA & 0.5163 $\pm$ 0.0041 & 0.3992 $\pm$ 0.0051 & 0.6327 $\pm$ 0.0037 & 0.5041 $\pm$ 0.0072 & 0.9487 $\pm$ 0.007 \\
+
+        \hline\\[-2.3ex]
+
+        HST$_{FraudGT}$ & $\pm$ & $\pm$ & $\pm$ & $\pm$ & $\pm$ \\
+        \quad +att\_aggr & $\pm$ & $\pm$ & $\pm$ & $\pm$ & $\pm$ \\
+        HST$_{PNA}$ & $\pm$ & $\pm$ & $\pm$ & $\pm$ & $\pm$ \\
+        \quad +att\_aggr & $\pm$ & $\pm$ & $\pm$ & $\pm$ & $\pm$ \\
+
+        \hline
+    \end{tabular}
+
+    \label{tab:main-results}
+\end{table*}
+
+
+Table~\ref{tab:main-results} shows the current F1 results.
+
+
+\chapter{Discussion}
+
+
+
+\section{Limitations}
+
+\section{Future work}
+
+\section{Conclusion}
 
 \bibliographystyle{plain}
 \bibliography{bibentries}
 
-\end{document}
+\appendix
+\chapter{Hyperparameter search}
 
+\begin{table*}[b]
+    \centering
+    \caption{Hyperparameters used during HST training and ranges searched during hyperparameter optimization.}
+    \label{tab:hyperparams}
+    \begin{tabular}{p{0.35\textwidth}p{0.6\textwidth}}
+        \hline
+        Hyperparameter & Value / range \\
+        \hline
+        model.hidden\_dim & 256 \\
+        aggregator.hidden\_dim & 256 \\
+        batch\_size & 256 \\
+        iter\_per\_epoch & 96 \\
+        min\_epoch & 80 \\
+        max\_epoch & 200 \\
+        patience\_ & 30 \\
+        fraudgt.heads & 4 \\
+        pearl.num\_phi\_layers & 4 \\
+        pearl.num\_samples & 32 \\
+        model\_lr & $\left[1e^{-5}, 1e^{-3}\right]$\text{, log scale} \\
+        aggregator\_lr & $\left[1e^{-6}, 1e^{-4}\right]$\text{, log scale} \\
+        weight\_decay & $\left[1e^{-5}, 1e^{-3}\right]$\text{, log scale}\\
+        pos\_weight & $\left[0.03, 1\right]$\text{, log scale}\\
+        dropout & $\left[0, 0.5\right]$ \\
+        \hline
+    \end{tabular}
+\end{table*}
+
+
+\end{document}
